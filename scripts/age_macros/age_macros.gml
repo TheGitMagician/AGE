@@ -1,0 +1,4 @@
+#macro AGE_DIR_LEFT 180
+#macro AGE_DIR_RIGHT 0
+#macro AGE_DIR_UP 90
+#macro AGE_DIR_DOWN 270

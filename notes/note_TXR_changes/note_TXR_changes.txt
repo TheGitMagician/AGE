@@ -1,0 +1,103 @@
+# TXR changes
+
+## Added `o_txr` to Manage Initialization for the AGS-System
+
+* added [o_txr](project://o_txr)
+
+This object initializes TXR, adds the necessary white-listed GameMaker functions to it 
+as well as custom functions needed for the AGS-System to work (e.g. wait()).
+
+It also manages an array of TXR threads that are currently running and are single-shot scripts.
+As soon as one of these threads reaches the status `finished` it is destroyed.
+
+
+
+## Added Functionality to "Block" the Game AGS-Style
+
+* added folder `AGE Functions` with script `txr_age_functions_misc` to the module
+* added [o_txr_dummy](project://o_txr_dummy)
+
+The script `txr_age_functions_misc` holds the function `txr_wait()`. It creates a temporary `o_txr_dummy`, stores the
+currently executing thread in it, then yields the thread.
+The thread can then be continued later on via `o_txr_dummy`s alarm[0] event.
+For the classic AGS wait(x) command it automatically starts the alarm and continues the thread once it has expired.
+Typically however, it is called as txr_wait(-1) - thus yielding the thread indefinitely.
+When the block is over you can then call its alarm[0] event via event_perform() to unblock the game.
+Since the only script that runs while the game is blocked is rep_exec_always and this script cannot block the game itself
+there is automatically always only ever a maximum of 1 `o_txr_dummy` active at any time.
+The blocked state of the whole engine is stored in `o_age_main`s `blocked` variable.
+
+
+
+## Changed `txr_run()`
+
+Officially txr_run() compiles a TXR script, creates a thread for it and resumes (=starts) the thread.
+It has been expanded to take two new arguments:
+
+* `monitor_for_destruction`: determines whether this thread is a one-shot thread that has to be monitored so that it can be destroyed once it is finished
+* `is_rep_exec_always`: is `true` if this thread is a repeatedly_execute_always thread. This enables code to run even though the game is blocked.
+
+Also, the section `txr_thread_resume()` has been expanded so that the thread is deleted correctly.
+
+
+
+## Changed `txr_thread_create()`
+
+Expanded the enum `txr_thread` with the value `rep_exec_always` and added a third argument to the function which sets this value.
+This is used to determine whether a thread is a repeatedly_execute_always thread which means that code that it calls (e.g. in characters or objects)
+is allowed to be executed even if the game is blocked by a blocking function.
+
+
+
+## Removed Bug From Default-Function Feature
+
+* changed `txr_build_expr()`
+* changed `scr_txr_demo_default_func()`
+
+The default-function is a feature that allows you to specify a function that is called if a function in a script doesn't exist.
+However, there is a bug in this feature.
+In `txr_build_expr()` in line 16 it is checked whether the called function exists or not. If not, a default function defined under the variable `txr_function_default`
+should be called. If this variable is set to -1 (default) then a text message with the error is automatically generated.
+The bug has two aspects.
+1) The local variables needed to process this step are called `var _args = [], _argc = 0;` However, a couple of lines down they are accessed as `args` and `argc`, which throws an error.
+The fix is to rename all the instances of these variables in this part of the code to `_args` and `_argc`.
+2) There is a distinction whether the mode `txr_value_calls` is true or false. The true-mode seems to have been added later. In this mode the variable `_fn_script` is simply
+set to `undefined` and the code continues. However, this later creates a problem in `txr_thread_resume()` where the function is not checked for the value `undefined` which creates an
+error because a non-existing function is called (in the large switch-statement around line 125).
+The fix is to delete the code from the false-mode of `txr_value_calls` and instead copy the code from the true-mode. Again, make sure that the local variables are written as _args and _argc.
+It now sets the default-function correctly with the correct parameters.
+
+Finally the provided default-function for the demo (`scr_txr_demo_default_func`) seems to contain some outdated code.
+It refers to a global variable called `global.extra_functions` which doesn't exist in this version of TXR.
+Instead write your own code - where you just have to make sure that it sets the variable `txr_function_error` which stops the thread and returns a debug error message.
+The arguments that you can use in this function are [0]= name of the missing function, [1],[2],...= the arguments that were supplied to this missing function.
+
+
+
+## Extended TXR Error Messages
+
+* changed `txr_thread_resume()` (at the very end)
+* changed `txr_throw()`
+
+In both scripts I added the string "TXR Error: " to the beginning of the `txr_thread.result` output to make it more clear where the error originated
+
+
+
+## Added ability to call and run methods of Structs
+
+* changed `txr_init()`
+* changed `txr_thread_resume()`
+
+Originally, when you call a function in TXR it checks whether the function was added to the global map via txr_function_add(). If it wasn't then it will throw an error.
+For example, you write: show_message("Hello") - TXR checks if show_message() exists in the global function map and calls it.
+You could also call instance functions via instance_variable.function() - as long as the referenced instance contained the called function this worked because TXR stored the function reference and when it was called it was automatically run in the correct context.
+However, if you tried to call a method of a struct via struct_reference.method() - this caused problems because TXR now stored the function reference to an anonymous function from a struct and then tried to run it in the context of the currently active instance.
+I expanded TXR's ability to store the qualifier/context that has last been called. It is stored in the variable global.txr_exec_context.
+Example 1) Object reference: If you write o_avatar.say() it would hold a reference to o_avatar.
+Example 2) Instance ID: If you write my_friend.name (where my_friend is a variable of the instance that is executing the current thread) it would hold a reference to my_friend.
+Example 3) Struct reference: If you write my_struct.age (where my_struct is a Struct reference) it would hold a reference to my_struct.
+It is created in txr_init().
+It is set in txr_thread_resume() at txr_action.get_field.
+It is read in txr_thread_resume() at txr_action.value_call. There the function that is called is wrapped in a method() call which uses the context from the global variable to execute the function in.
+This way you can now call an anonymous struct function in the context of the struct that it was gotten from.
+The original behavior is still valid. If you simply call a function without any context then TXR will check it against its global function map.

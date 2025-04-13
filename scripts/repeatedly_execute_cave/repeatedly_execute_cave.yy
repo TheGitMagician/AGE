@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"repeatedly_execute_cave",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"repeatedly_execute_cave",
+  "parent":{
+    "name":"Cave",
+    "path":"folders/Rooms/Cave.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

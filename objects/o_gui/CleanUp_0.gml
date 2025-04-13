@@ -1,0 +1,1 @@
+if (ds_exists(li_textblocks,ds_type_list)) ds_list_destroy(li_textblocks);

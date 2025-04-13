@@ -1,0 +1,11 @@
+{
+  "$GMNotes":"",
+  "%Name":"note_TXR_ToDos",
+  "name":"note_TXR_ToDos",
+  "parent":{
+    "name":"age_main",
+    "path":"age_main.yyp",
+  },
+  "resourceType":"GMNotes",
+  "resourceVersion":"2.0",
+}

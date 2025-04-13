@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"character_struct",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"character_struct",
+  "parent":{
+    "name":"Character Struct and Functions",
+    "path":"folders/Modules/AGE Adventure Game Engine/Character Struct and Functions.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

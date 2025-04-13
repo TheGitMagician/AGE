@@ -1,0 +1,23 @@
+txr_run() has been expanded so that it takes two new arguments (monitored_for_destruction and is_rep_exec_always).
+Do txr_exec, txr_exec_actions, and txr_exec_string have to be modified in the same way?
+
+Look at o_txr and decide which functions need to be white-listed and which don't.
+
+Do we need a wrapper function for txr_thread_resume? This would automatically handle the error state: show debug information,
+destroy the thread and remove the thread if it is part of o_txr's threads array.
+
+Should txr_wait() use timesources to wait and callback instead of an alarm?
+
+Does o_txr_dummy have to be changed? Right now it always only holds one thread and the time to yield it for.
+Could it be that it has to store multiple threads and wait times? Also, does this need to be a separate object or could it be
+an array/struct inside of o_txr?
+
+Is it possible to extend txr_throw_at() so that it not only shows line/column but also the function name of the function
+that ran the script? I guess that's not possible?
+
+All TXR debug messages should start with "TXR Error: " or "TXR Warning: " so that it is clear where they come from.
+
+Check global.txr_exec_args - it causes a memory leak and its use is unclear.
+The memory leak is because it holds a ds_list created in txr_init() but this list is never destroyed.
+It seems to only store the arguments of the currently executing funcion (see txr_thread_resume() at case txr_action.value_call).
+Why are the arguments stored in this global list and only accessed within txr_action.value_call and never anywhere else?
