@@ -14,6 +14,7 @@ function txr_compile_getter(q) {
 			if (ds_map_exists(global.txr_constant_map, s)) {
 				var val = global.txr_constant_map[?s];
 				if (is_string(val)) {
+					show_message(q[1]);
 					ds_list_add(out, [txr_action._string, q[1], val]);
 				} else {
 					ds_list_add(out, [txr_action.number, q[1], val]);

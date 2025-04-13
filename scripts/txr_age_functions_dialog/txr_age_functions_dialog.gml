@@ -1,5 +1,5 @@
-function txr_dialog_show_options() {
-	o_age_main.dialog_manager.show_dialog_options = true;
+function txr_dialog_return() {
+	o_age_main.dialog_manager.return_to_options();
 }
 
 function txr_dialog_goto_previous() {

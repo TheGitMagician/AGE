@@ -2,6 +2,15 @@ function txr_run(_code, _thread_type=txr_thread_type.standard)
 {
 	var pg,th;
 	
+	//@TODO super hacky "pre-processor" that replaces the special constants in dialog scripts ...
+	//this really needs to be integrated in the ast builder.
+	if (_thread_type == txr_thread_type.dialog)
+	{
+		_code = string_replace_all(_code, "CURRENT_DIALOG_RETURN", "current_dialog_return();\nreturn 0");
+		_code = string_replace_all(_code, "CURRENT_DIALOG_GOTO_PREVIOUS", "current_dialog_goto_previous();\nreturn 0");
+		_code = string_replace_all(_code, "CURRENT_DIALOG_STOP", "current_dialog_stop();\nreturn 0");
+	}
+	
 	//compile the code
 	pg = txr_compile(_code);
 	
@@ -10,7 +19,7 @@ function txr_run(_code, _thread_type=txr_thread_type.standard)
 		show_debug_message(txr_error);
 		return -1;
 	}
-	//else show_debug_message(txr_program_print(pg));
+	//else show_debug_message(txr_program_print(pg));	
 
 	//create a thread from the compiled code
 	th = txr_thread_create(pg, undefined, _thread_type);

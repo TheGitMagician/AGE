@@ -36,7 +36,7 @@ txr_function_add("wait",txr_wait,1);
 
 txr_function_add("show_message", scr_txr_demo_show_message,1);
 
-txr_function_add("current_dialog_return", txr_dialog_show_options,0);
+txr_function_add("current_dialog_return", txr_dialog_return,0);
 txr_function_add("current_dialog_goto_previous", txr_dialog_goto_previous,0);
 txr_function_add("current_dialog_goto_dialog", txr_dialog_goto_dialog,1);
 txr_function_add("current_dialog_stop", txr_dialog_stop,0);

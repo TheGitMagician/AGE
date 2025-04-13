@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"character_runtime_functions",
   "parent":{
-    "name":"Character Struct and Functions",
-    "path":"folders/Modules/AGE Adventure Game Engine/Character Struct and Functions.yy",
+    "name":"Character Structs and Functions",
+    "path":"folders/Modules/AGE Adventure Game Engine/Character Structs and Functions.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

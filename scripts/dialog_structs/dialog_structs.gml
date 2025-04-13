@@ -7,7 +7,14 @@ function Dialog(dialog_manager) constructor
 	options = []; //each entry is again an array: [option_text, option_script, option_state, option_say]
 	
 	static start = function()
-	{		
+	{
+		if ((manager.current_dialog != undefined) && (!manager.handing_over_from_other_dialog))
+		{
+			show_debug_message("AGE: Can't start a new dialog while another dialog is currently active. Use stop() to end the current dialog first.");
+			return;
+		}
+		else manager.handing_over_from_other_dialog = false;
+		
 		//if the dialog is started from scratch (and not started from goto_previous() or goto_dialog())
 		//then reset options that were set to option_off_for_now
 		if (manager.current_dialog == undefined)
@@ -29,17 +36,19 @@ function Dialog(dialog_manager) constructor
 		if (options[0][1] != "")
 		{
 			var th;
-			th = txr_run(options[0][1]);
+			th = txr_run(options[0][1], txr_thread_type.dialog);
 			if (th != -1) manager.currently_active_txr_thread = th;
 		}
 	}
 
-	static stop = function()
+	//private
+	static __stop = function()
 	{
 		manager.current_dialog = undefined;
 		manager.previous_dialog = undefined;
 		manager.show_dialog_options = false;
 		manager.currently_active_txr_thread = undefined;
+		manager.current_dialog_was_stopped = false;
 	}
 	
 	static run_option = function(_option_nr)
@@ -69,7 +78,7 @@ function Dialog(dialog_manager) constructor
 		manager.show_dialog_options = false;
 		
 		var th;
-		th = txr_run(options[_option_nr][1]);
+		th = txr_run(options[_option_nr][1], txr_thread_type.dialog);
 		if (th != -1) manager.currently_active_txr_thread = th;
 	}
 
@@ -100,18 +109,27 @@ function Dialog(dialog_manager) constructor
 	//@DEBUG
 	static debug_show_txr_script_for_option = function(_option_nr)
 	{
-		show_debug_message(options[_option_nr][1]);
+		var s,i=1,n=1;
+		s = string_copy(options[_option_nr][1],1,string_length(options[_option_nr][1]));
+		while (string_pos_ext("\n",s,i) > 0)
+		{
+			i = string_pos_ext("\n",s,i);
+			s = string_replace_at(s,i,"\n"+string(n)+") ");
+			n ++;
+			i += 2;
+		}
+		show_debug_message(s);
 	}
 }
 
 function Dialog_Manager() constructor
-{	
+{
 	current_dialog = undefined; //pointer to the current dialog struct
-	previous_dialog = undefined; //pointer to the previous dialog struct (if a dialog is currently running)
-	
-	currently_active_txr_thread = undefined; //pointer to the TXR thread that stores the currently running dialog script
-	
+	previous_dialog = undefined; //pointer to the previous dialog struct (if a dialog is currently running)	
+	currently_active_txr_thread = undefined; //pointer to the TXR thread that stores the currently running dialog script	
 	show_dialog_options = false;
+	handing_over_from_other_dialog = false; //is true when one running dialog hands over to another dialog (e.g. via goto-previous or goto-dialog)
+	current_dialog_was_stopped = false; //gets set to true if dialog.stop() was called from outside. Causes the current dialog to stop after the active script has finished
 	
 	static parse_dialog_file_into_database = function(_filename)
 	{
@@ -209,7 +227,7 @@ function Dialog_Manager() constructor
 				current_script += "\ncurrent_dialog_return();\nreturn 0;";
 			
 			else if (string_trim(line) == "stop")
-				current_script += "\n" + current_dialog.script_name + ".stop();\nreturn 0;";
+				current_script += "\n" + current_dialog.script_name + ".__stop();\nreturn 0;";
 				
 			else if (string_trim(line) == "goto-previous")
 				current_script += "\ncurrent_dialog_goto_previous();\nreturn 0;";	
@@ -218,6 +236,15 @@ function Dialog_Manager() constructor
 			{
 				tt = string_split(line," ",true,1);
 				current_script += "\ncurrent_dialog_goto_dialog(" + string_trim(tt[1]) + ");\nreturn 0;";
+			}
+			
+			else if (string_starts_with(line, "run-script"))
+			{
+				var scr;
+				tt = string_split(line," ",true,1);
+				scr = asset_get_index(string_trim(tt[1]));
+				if (script_exists(scr)) current_script += "\n" + scr();
+				else show_debug_message("AGE - Warning: Called dialog script `"+ string_trim(tt[1]) +"` doesn't exist.");
 			}
 			
 			else if (string_starts_with(line, "option-on"))
@@ -254,11 +281,17 @@ function Dialog_Manager() constructor
 		}
 	}
 	
-	static show_dialog_options = function()
+	static return_to_options = function()
 	{
 		if (current_dialog == undefined)
 		{
 			show_debug_message("AGE: Can't return to dialog options because no dialog is currently active.");
+			return;
+		}
+		
+		if (current_dialog_was_stopped)
+		{
+			current_dialog.__stop();
 			return;
 		}
 		
@@ -270,7 +303,13 @@ function Dialog_Manager() constructor
 		if (previous_dialog == undefined)
 		{
 			show_debug_message("AGE: Can't return to previous dialog. No previous dialog stored. Ending Dialog.");
-			if (current_dialog != undefined) current_dialog.stop();
+			if (current_dialog != undefined) current_dialog.__stop();
+			return;
+		}
+		
+		if (current_dialog_was_stopped)
+		{
+			current_dialog.__stop();
 			return;
 		}
 		
@@ -285,15 +324,34 @@ function Dialog_Manager() constructor
 			return;
 		}
 		
+		if (current_dialog_was_stopped)
+		{
+			current_dialog.__stop();
+			return;
+		}
+		
 		if (!is_instanceof(_dialog,Dialog))
 		{
 			show_debug_message("AGE: Can't go to dialog `"+_dialog+"`. Not a valid dialog. Ending dialog.");
-			if (current_dialog != undefined) current_dialog.stop();
+			if (current_dialog != undefined) current_dialog.__stop();
 			return;
 		}
 		
 		previous_dialog = current_dialog;
+		handing_over_from_other_dialog = true;
 		
 		_dialog.start();
+	}
+	
+	static stop = function()
+	{
+		if (current_dialog == undefined)
+		{
+			show_debug_message("AGE: Can't stop dialog because no dialog is currently active.");
+			return;
+		}
+		
+		//@TODO: this behavior might have to be customized depending from where the stop() method was called - see AGS manual for Dialog.Stop() 
+		current_dialog_was_stopped = true;
 	}
 }

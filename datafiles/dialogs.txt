@@ -1,19 +1,23 @@
-//KOMMENTARE EINFÜGEN UND LEERE ZEILEN IGNORIEREN
-//OPTIONEN AUSSCHALTEN _ AUCH PERMA-AUS
 === dTest
 @S
 indi: Hey, nice to see you!
 return
 
-@1 How are you doing?
-indi: Hey, how are you?
-  indi.face_direction(eDirRight);
-  //a comment in a script
-  indi.say("Yeah, the comment worked");
-return
-  indi.say("Yeah, the comment workedagain");
-  indi.say("Yeah, the comment workedandagain");
-option-off-for-now 1
+@1 Where am I standing?
+indi: Let's see where I stand.
+run-script play_animation
+  if (indi.x < 160)
+  {
+    indi.face_direction(eDirDown);
+    indi.say("I stand in the left side of the room.");
+  }
+  else
+  {
+    indi.say("I stand in the right side of the room. Strange.");
+    CURRENT_DIALOG_GOTO_PREVIOUS;
+  }
+indi: That was fascinating.
+//option-off-for-now 1
 return
 
 @2 Let's talk about a branch.

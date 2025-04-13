@@ -52,9 +52,12 @@ for (i=0; i<n; i++)
 
 // ================ process dialog options ================
 if (dialog_manager.show_dialog_options)
-{	
+{
 	if (keyboard_check_pressed(vk_anykey))
 	{
-		dialog_manager.current_dialog.run_option(real(keyboard_lastchar))
+		if (string_digits(keyboard_lastchar) != "")
+		{
+			dialog_manager.current_dialog.run_option(real(string_digits(keyboard_lastchar)));
+		}
 	}
 }

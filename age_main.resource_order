@@ -1,9 +1,10 @@
 {
   "FolderOrderSettings":[
+    {"name":"Dialogs","order":15,"path":"folders/Dialogs.yy",},
     {"name":"Helper Functions","order":14,"path":"folders/Helper Functions.yy",},
     {"name":"AGE Adventure Game Engine","order":1,"path":"folders/Modules/AGE Adventure Game Engine.yy",},
-    {"name":"Character Struct and Functions","order":2,"path":"folders/Modules/AGE Adventure Game Engine/Character Struct and Functions.yy",},
-    {"name":"Dialog Struct and Functions","order":3,"path":"folders/Modules/AGE Adventure Game Engine/Dialog Struct and Functions.yy",},
+    {"name":"Character Structs and Functions","order":2,"path":"folders/Modules/AGE Adventure Game Engine/Character Structs and Functions.yy",},
+    {"name":"Dialog Structs and Functions","order":3,"path":"folders/Modules/AGE Adventure Game Engine/Dialog Structs and Functions.yy",},
     {"name":"Objects","order":10,"path":"folders/Objects.yy",},
     {"name":"Hat","order":1,"path":"folders/Objects/Hat.yy",},
     {"name":"Sprites","order":1,"path":"folders/Objects/Hat/Sprites.yy",},
