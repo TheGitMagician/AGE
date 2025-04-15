@@ -74,5 +74,5 @@ function create_character(script_name, settings_struct)
 }
 
 //load all dialogs into memory
-dialog_manager = new Dialog_Manager();
-dialog_manager.parse_dialog_file_into_database("dialogs.txt");
+dialog = new Dialog_Manager();
+dialog.load_file("dialogs.txt");

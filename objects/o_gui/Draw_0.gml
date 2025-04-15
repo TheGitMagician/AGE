@@ -23,15 +23,15 @@ draw_set_halign(fa_left);
 draw_set_valign(fa_top);
 
 //Draw Dialog Options
-if (o_age_main.dialog_manager.show_dialog_options)
+if (o_age_main.dialog.are_options_displayed())
 {
-	var d = o_age_main.dialog_manager.current_dialog;
+	var d = o_age_main.dialog.get_current_dialog();
 	var option_count = 0;
-	for (i=1; i<d.option_count; i++)
+	for (i=1; i<d.get_option_count(); i++)
 	{
-		if (d.option_flags[i][__AGE_DLG_OPTN_FLG_STATE] == age.option_on)
+		if (d.get_option_state(i, __AGE_DLG_OPTN_FLG_STATE) == age.option_on)
 		{			
-			draw_text(5,150+option_count*12,string(i)+") "+ d.option_text[i]);
+			draw_text(5,150+option_count*12,string(i)+") "+ d.get_option_text(i));
 			option_count ++;
 		}
 	}

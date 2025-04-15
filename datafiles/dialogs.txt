@@ -24,14 +24,13 @@ return
 @2 Let's talk about a branch.
 indi: Let's go to another dialog.
 option-off-for-now 2
-//goto-dialog dTestBranch1
-return
+goto-dialog dTestBranch1
+//return
 
 @3 Goodbye.
 indi: I better get going.
 //option-off-for-now 3
-//stop
-return
+stop
 
 === dTestBranch1
 @S

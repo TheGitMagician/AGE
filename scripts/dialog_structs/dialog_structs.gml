@@ -1,20 +1,21 @@
 #macro __AGE_DLG_OPTN_FLG_STATE 0
 #macro __AGE_DLG_OPTN_FLG_SAY 1
+#macro __AGE_DLG_OPTN_FLG_WAS_CHOSEN 2
 
-function Dialog(dialog_manager) constructor
+function Dialog(_dialog_manager) constructor
 {
 	//things to remember
 	// * option 0 is the entry point for the dialog (@S in the dialog script)
 	//     so the actual options start with number 1
 	// * the individual dialogs have no stop() method because Dialog Manager handles the end of the conversation in its stop() method
 	
-	static manager = dialog_manager; //the instance of the Dialog_Manager struct that controls this dialog
+	static manager = _dialog_manager; //the instance of the Dialog_Manager struct that controls this dialog
 	
 	script_name = ""; //the name used in TXR scripts to access this dialog
 	
 	option_text =   []; //the text for this option shown in the dialog GUI
 	option_script = []; //the connected TXR script that is run when this option is selected
-	option_flags =  []; //each entry is again an array [option_state, option_say]
+	option_flags =  []; //each entry is again an array [option_state, option_say, option_was_chosen]
 	option_count =  0;  //stores the number of options for this dialog (e.g. 3 means that the dialog has 1 entry point + 2 actual options)
 	
 	static start = function()
@@ -29,6 +30,7 @@ function Dialog(dialog_manager) constructor
 		
 		//if the dialog is started from scratch (and not started from goto_previous() or goto_dialog())
 		//then reset options that were set to option_off_for_now
+		//and also reset all chosen states
 		if (manager.current_dialog == undefined)
 		{
 			var i;
@@ -38,6 +40,8 @@ function Dialog(dialog_manager) constructor
 				{
 					option_flags[i][__AGE_DLG_OPTN_FLG_STATE] = age.option_on;
 				}
+				
+				option_flags[i][__AGE_DLG_OPTN_FLG_WAS_CHOSEN] = false;
 			}
 		}
 		
@@ -47,49 +51,37 @@ function Dialog(dialog_manager) constructor
 		//if the dialog features an opening script then run that script
 		if (option_script[0] != "")
 		{
+			manager.currently_executed_option = 0;
+			
 			var th;
 			th = txr_run(option_script[0], txr_thread_type.dialog);
 			if (th != -1) manager.currently_active_txr_thread = th;
 		}
 	}
 	
-	static run_option = function(_option_nr)
+	static get_option_count = function()
 	{
-		//check if there is an active dialog
-		if (manager.current_dialog == undefined)
-		{
-			show_debug_message("AGE: Can't run dialog option because there is currently no active dialog. Use start() first to start a dialog.");
-			return;
-		}
-		
-		//check if option is valid
-		if ((_option_nr <= 0) || (_option_nr > option_count-1))
-		{
-			show_debug_message("AGE: Trying to run dialog option `"+string(_option_nr)+"` which is outside the allowed range: `1-"+string(option_count-1)+"`.");
-			return;
-		}
-		
-		//check if option is active
-		if (option_flags[_option_nr][__AGE_DLG_OPTN_FLG_STATE] != age.option_on)
-		{
-			show_debug_message("AGE: Can't run dialog option `"+string(_option_nr)+"` because it is deactivated.");
-			return;
-		}		
-		
-		//run option
-		manager.show_dialog_options = false;
-		
-		var th;
-		th = txr_run(option_script[_option_nr], txr_thread_type.dialog);
-		if (th != -1) manager.currently_active_txr_thread = th;
+		return option_count;
 	}
 
+	static get_option_state = function(_option_nr)
+	{
+		//check if option exists
+		if ((_option_nr < 1) || (_option_nr > option_count-1))
+		{
+			show_debug_message("AGE: Trying to get state of option `"+string(_option_nr)+"` which is outside the allowed range: `1-"+string(option_count-1)+"`.");
+			return;
+		}
+		
+		return option_flags[_option_nr][__AGE_DLG_OPTN_FLG_STATE];
+	}
+	
 	static set_option_state = function(_option_nr, _state)
 	{
 		//check if option exists
-		if ((_option_nr < 0) || (_option_nr > option_count-1))
+		if ((_option_nr < 1) || (_option_nr > option_count-1))
 		{
-			show_debug_message("AGE: Trying to set state of option `"+string(_option_nr)+"` which is outside the allowed range: `0-"+string(option_count-1)+"`.");
+			show_debug_message("AGE: Trying to set state of option `"+string(_option_nr)+"` which is outside the allowed range: `1-"+string(option_count-1)+"`.");
 			return;
 		}
 		
@@ -107,7 +99,48 @@ function Dialog(dialog_manager) constructor
 		//set state
 		option_flags[_option_nr][__AGE_DLG_OPTN_FLG_STATE] = _state;
 	}
-
+	
+	static get_option_text = function(_option_nr) //we don't currently allow setting the option text because then all options would have to be saved with the game
+	{
+		//check if option exists
+		if ((_option_nr < 1) || (_option_nr > option_count-1))
+		{
+			show_debug_message("AGE: Trying to get text of option `"+string(_option_nr)+"` which is outside the allowed range: `1-"+string(option_count-1)+"`.");
+			return;
+		}
+		
+		return option_text[_option_nr];
+	}
+	
+	static get_has_option_been_chosen = function(_option_nr)
+	{
+		//check if option exists
+		if ((_option_nr < 1) || (_option_nr > option_count-1))
+		{
+			show_debug_message("AGE: Trying to get chosen state of option `"+string(_option_nr)+"` which is outside the allowed range: `1-"+string(option_count-1)+"`.");
+			return;
+		}
+		
+		return option_flags[_option_nr][__AGE_DLG_OPTN_FLG_WAS_CHOSEN];
+	}
+	
+	static set_has_option_been_chosen = function(_option_nr, _chosen)
+	{
+		//check if option exists
+		if ((_option_nr < 1) || (_option_nr > option_count-1))
+		{
+			show_debug_message("AGE: Trying to set chosen state of option `"+string(_option_nr)+"` which is outside the allowed range: `1-"+string(option_count-1)+"`.");
+			return;
+		}
+		
+		option_flags[_option_nr][__AGE_DLG_OPTN_FLG_WAS_CHOSEN] = _chosen;
+	}
+	
+	static get_script_name = function()
+	{
+		return script_name;
+	}
+	
 	//@DEBUG
 	static debug_show_txr_script_for_option = function(_option_nr)
 	{
@@ -127,12 +160,13 @@ function Dialog(dialog_manager) constructor
 function Dialog_Manager() constructor
 {
 	current_dialog = undefined; //pointer to the current dialog struct
-	previous_dialog = undefined; //pointer to the previous dialog struct (if a dialog is currently running)	
+	previous_dialog = undefined; //pointer to the previous dialog struct (if a dialog is currently running)
+	currently_executed_option = -1;
 	currently_active_txr_thread = undefined; //pointer to the TXR thread that stores the currently running dialog script	
 	show_dialog_options = false;
 	handing_over_from_other_dialog = false; //is true when one running dialog hands over to another dialog (e.g. via goto-previous or goto-dialog)
 	
-	static parse_dialog_file_into_database = function(_filename)
+	static load_file = function(_filename)
 	{
 		var buffer,lines,line,i,current_dialog=undefined,current_option_id=-1,current_script,o,n,tt=[];
 		
@@ -217,6 +251,8 @@ function Dialog_Manager() constructor
 					
 					//set option state
 					current_dialog.option_flags[current_option_id][__AGE_DLG_OPTN_FLG_STATE] = age.option_on;
+					current_dialog.option_flags[current_option_id][__AGE_DLG_OPTN_FLG_SAY] = false;
+					current_dialog.option_flags[current_option_id][__AGE_DLG_OPTN_FLG_WAS_CHOSEN] = false;
 				}
 				current_dialog.option_count ++;
 				current_script = "";
@@ -289,7 +325,10 @@ function Dialog_Manager() constructor
 	{
 		//stop execution of current option script
 		if (currently_active_txr_thread != undefined)
+		{
 			txr_thread_destroy(currently_active_txr_thread);
+			currently_active_txr_thread = undefined;
+		}
 		
 		if (current_dialog == undefined)
 		{
@@ -313,7 +352,8 @@ function Dialog_Manager() constructor
 			if (current_dialog != undefined) stop();
 			return;
 		}
-				
+		
+		currently_executed_option = -1;
 		show_dialog_options = true;
 	}
 	
@@ -321,7 +361,10 @@ function Dialog_Manager() constructor
 	{
 		//stop execution of current option script
 		if (currently_active_txr_thread != undefined)
+		{
 			txr_thread_destroy(currently_active_txr_thread);
+			currently_active_txr_thread = undefined;
+		}
 		
 		if (previous_dialog == undefined)
 		{
@@ -337,7 +380,10 @@ function Dialog_Manager() constructor
 	{
 		//stop execution of current option script
 		if (currently_active_txr_thread != undefined)
+		{
 			txr_thread_destroy(currently_active_txr_thread);
+			currently_active_txr_thread = undefined;
+		}
 		
 		if (current_dialog == undefined)
 		{
@@ -354,6 +400,7 @@ function Dialog_Manager() constructor
 		
 		previous_dialog = current_dialog;
 		handing_over_from_other_dialog = true;
+		currently_executed_option = -1;
 		
 		_dialog.start();
 	}
@@ -368,12 +415,80 @@ function Dialog_Manager() constructor
 		
 		//stop execution of current option script
 		if (currently_active_txr_thread != undefined)
-			txr_thread_destroy(currently_active_txr_thread);		
+		{
+			txr_thread_destroy(currently_active_txr_thread);
+		}	
 		
 		//reset variables
 		current_dialog = undefined;
 		previous_dialog = undefined;
+		currently_executed_option = -1;
 		show_dialog_options = false;
 		currently_active_txr_thread = undefined;
+		handing_over_from_other_dialog = false;
+	}
+	
+	static run_option = function(_option_nr)
+	{
+		//check if there is an active dialog
+		if (current_dialog == undefined)
+		{
+			show_debug_message("AGE: Can't run dialog option because there is currently no active dialog. Use start() first to start a dialog.");
+			return false;
+		}
+		
+		var d = current_dialog;
+		
+		//check if option is valid
+		if ((_option_nr < 1) || (_option_nr > d.option_count-1))
+		{
+			show_debug_message("AGE: Trying to run dialog option `"+string(_option_nr)+"` which is outside the allowed range: `1-"+string(d.option_count-1)+"`.");
+			return false;
+		}
+		
+		//check if option is active
+		if (d.option_flags[_option_nr][__AGE_DLG_OPTN_FLG_STATE] != age.option_on)
+		{
+			show_debug_message("AGE: Can't run dialog option `"+string(_option_nr)+"` because it is deactivated.");
+			return false;
+		}
+		
+		//run option
+		d.option_flags[_option_nr][__AGE_DLG_OPTN_FLG_WAS_CHOSEN] = true;
+		
+		show_dialog_options = false;
+		currently_executed_option = _option_nr;
+		
+		var th;
+		th = txr_run(d.option_script[_option_nr], txr_thread_type.dialog);
+		if (th != -1)
+		{
+			currently_active_txr_thread = th;
+			return true;
+		}
+		else return false;
+	}
+	
+	static are_options_displayed = function()
+	{
+		return show_dialog_options;
+	}
+	
+	static get_current_dialog = function()
+	{
+		return current_dialog;
+	}
+	
+	static get_current_option = function()
+	{
+		return currently_executed_option;
+	}
+	
+	static get_id_by_name = function(_script_name)
+	{
+		if (variable_instance_exists(o_age_main,_script_name))
+			return variable_instance_get(o_age_main,_script_name);
+		else
+			return undefined;
 	}
 }

@@ -1,3 +1,3 @@
 txr_run(@'
-		dialog_manager.stop();
+		dialog.stop();
 		');
