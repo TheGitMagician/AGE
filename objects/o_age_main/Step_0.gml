@@ -57,6 +57,7 @@ if (dialog_manager.show_dialog_options)
 	{
 		if (string_digits(keyboard_lastchar) != "")
 		{
+			//dialog_manager.current_dialog.debug_show_txr_script_for_option(real(string_digits(keyboard_lastchar)));
 			dialog_manager.current_dialog.run_option(real(string_digits(keyboard_lastchar)));
 		}
 	}

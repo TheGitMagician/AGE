@@ -25,15 +25,13 @@ draw_set_valign(fa_top);
 //Draw Dialog Options
 if (o_age_main.dialog_manager.show_dialog_options)
 {
-	var o = o_age_main.dialog_manager.current_dialog.options;
+	var d = o_age_main.dialog_manager.current_dialog;
 	var option_count = 0;
-	n = array_length(o);
-	for (i=1; i<n; i++)
+	for (i=1; i<d.option_count; i++)
 	{
-		if (o[i][2] == age.option_on)
+		if (d.option_flags[i][__AGE_DLG_OPTN_FLG_STATE] == age.option_on)
 		{			
-			e = o[i][0];
-			draw_text(5,150+option_count*12,string(i)+") "+e);
+			draw_text(5,150+option_count*12,string(i)+") "+ d.option_text[i]);
 			option_count ++;
 		}
 	}

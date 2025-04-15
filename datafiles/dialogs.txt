@@ -4,8 +4,8 @@ indi: Hey, nice to see you!
 return
 
 @1 Where am I standing?
-indi: Let's see where I stand.
-run-script play_animation
+indi: Let's see where I stand.//comment
+//run-script play_animation
   if (indi.x < 160)
   {
     indi.face_direction(eDirDown);
@@ -14,19 +14,24 @@ run-script play_animation
   else
   {
     indi.say("I stand in the right side of the room. Strange.");
-    CURRENT_DIALOG_GOTO_PREVIOUS;
+    current_dialog_stop();
   }
+
 indi: That was fascinating.
-//option-off-for-now 1
+option-off-for-now 1
 return
 
 @2 Let's talk about a branch.
 indi: Let's go to another dialog.
-goto-dialog dTestBranch1
+option-off-for-now 2
+//goto-dialog dTestBranch1
+return
 
 @3 Goodbye.
 indi: I better get going.
-stop
+//option-off-for-now 3
+//stop
+return
 
 === dTestBranch1
 @S
@@ -34,7 +39,7 @@ indi: Oh, we are in this branch again!
 return
 
 @1 Anything new?
-indi: Anything new around here?
+indi: Anything new around here now?
   dTest.set_option_state(1,eOptionOffForever);
 return
 
