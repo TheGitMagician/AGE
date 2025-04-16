@@ -18,12 +18,12 @@ indi: Let's see where I stand.//comment
   }
 
 indi: That was fascinating.
-option-off-for-now 1
+//option-off-for-now 1
 return
 
 @2 Let's talk about a branch.
 indi: Let's go to another dialog.
-option-off-for-now 2
+//option-off-for-now 2
 goto-dialog dTestBranch1
 //return
 
@@ -39,7 +39,8 @@ return
 
 @1 Anything new?
 indi: Anything new around here now?
-  dTest.set_option_state(1,eOptionOffForever);
+  //dTest.set_option_state(1,eOptionOffForever);
+option-off-for-now 1
 return
 
 @2 Let's get back to our main topic.

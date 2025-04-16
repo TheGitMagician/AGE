@@ -1,0 +1,11 @@
+The Documentation uses docsify.
+
+https://docsify.js.org/
+
+After installation you start a terminal in the folder with the documentation and run
+
+docsify serve
+
+It will create a local webserver at http://localhost:3000 where you can check out the preview of the pages.
+
+The GitHub repository has been set up so that the Github Pages uses the subfolder /docs in the main branch to generate the static sites.

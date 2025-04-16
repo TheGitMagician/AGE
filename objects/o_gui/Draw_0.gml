@@ -29,6 +29,8 @@ if (o_age_main.dialog.are_options_displayed())
 	var option_count = 0;
 	for (i=1; i<d.get_option_count(); i++)
 	{
+		if (d.get_has_option_been_chosen(i)) draw_set_color(c_gray);
+		else draw_set_color(c_white);
 		if (d.get_option_state(i, __AGE_DLG_OPTN_FLG_STATE) == age.option_on)
 		{			
 			draw_text(5,150+option_count*12,string(i)+") "+ d.get_option_text(i));
@@ -36,6 +38,8 @@ if (o_age_main.dialog.are_options_displayed())
 		}
 	}
 }
+
+draw_set_color(c_white);
 
 
 

@@ -18,20 +18,24 @@ function Dialog(_dialog_manager) constructor
 	option_flags =  []; //each entry is again an array [option_state, option_say, option_was_chosen]
 	option_count =  0;  //stores the number of options for this dialog (e.g. 3 means that the dialog has 1 entry point + 2 actual options)
 	
+	dialog_counter = -1; //hacky way to find out if the dialog has been started for the first time in a conversation (and thus some flags need to be reset like option_was_chosen or option_off_for_now)
+											 //see the same variable in Dialog_Manager for a description of how this works
+	
 	static start = function()
-	{			
+	{
+		//if there is currently a dialog running then the start() command can only be called if another dialog hands the conversation over to this new dialog
+		//the variable `handing_over_from_other_dialog` is only set to true in Dialog_Manager if goto_dialog() is called (can also be triggered from goto_previous())
 		if ((manager.current_dialog != undefined) && (!manager.handing_over_from_other_dialog))
 		{
 			show_debug_message("AGE: Can't start a new dialog while another dialog is currently active. Use dialog.stop() to end the current dialog first or if you are in a dialog script use current_dialog_goto_dialog(x) to change topics.");
 			return;
 		}
+		else manager.handing_over_from_other_dialog = false;
 		
-		manager.handing_over_from_other_dialog = false;
-		
-		//if the dialog is started from scratch (and not started from goto_previous() or goto_dialog())
+		//if the dialog is started for the first time in a conversation
 		//then reset options that were set to option_off_for_now
-		//and also reset all chosen states
-		if (manager.current_dialog == undefined)
+		//and also reset option_was_chosen to false
+		if (dialog_counter != manager.dialog_counter)
 		{
 			var i;
 			for (i=1; i<option_count; i++)
@@ -43,10 +47,12 @@ function Dialog(_dialog_manager) constructor
 				
 				option_flags[i][__AGE_DLG_OPTN_FLG_WAS_CHOSEN] = false;
 			}
+			
+			dialog_counter = manager.dialog_counter;
 		}
 		
 		//start dialog
-		manager.current_dialog = self;
+		manager.current_dialog = self;		
 		
 		//if the dialog features an opening script then run that script
 		if (option_script[0] != "")
@@ -164,7 +170,13 @@ function Dialog_Manager() constructor
 	currently_executed_option = -1;
 	currently_active_txr_thread = undefined; //pointer to the TXR thread that stores the currently running dialog script	
 	show_dialog_options = false;
-	handing_over_from_other_dialog = false; //is true when one running dialog hands over to another dialog (e.g. via goto-previous or goto-dialog)
+	handing_over_from_other_dialog = false; //is true only when one running dialog hands over to another dialog (set in goto_dialog() - which can also be triggered from goto_previous())
+		
+	//and now a hacky way to track whether a dialog has been restarted within an ongoing conversation or is started for the first time since the conversation has started
+	//this is done by comparing the counter in the dialog (starting at -1) to this counter (starting at 0).
+	//If it's not the same then the dialog has been started for the first time in this conversation (and its counter is adjusted to the current value and some flags are reset (e.g. option_chosen, state_off_for_now).
+	//Once stop() is called the counter here is increased by one so when the next conversation starts the dialog's counter again doesn't match and its flags are reset again.
+	dialog_counter = 0; 
 	
 	static load_file = function(_filename)
 	{
@@ -315,8 +327,15 @@ function Dialog_Manager() constructor
 			//so convert the line into TXR script by adding the necessary TXR code around the building blocks
 			else
 			{
-				tt = string_split(line,":",true,1);
-				current_script += "\n" + string_trim(tt[0]) + @'.say("' + string_trim(tt[1]) + @'");';
+				try
+				{
+					tt = string_split(line,":",true,1);
+					current_script += "\n" + string_trim(tt[0]) + @'.say("' + string_trim(tt[1]) + @'");';
+				}
+				catch(_error)
+				{
+					show_message("AGE: Error parsing dialog file `"+_filename+"`. Stopped at dialog `"+current_dialog.script_name+"` because the following line couldn't be parsed:\n"+line);
+				}
 			}
 		}
 	}
@@ -426,6 +445,8 @@ function Dialog_Manager() constructor
 		show_dialog_options = false;
 		currently_active_txr_thread = undefined;
 		handing_over_from_other_dialog = false;
+		
+		dialog_counter ++;
 	}
 	
 	static run_option = function(_option_nr)

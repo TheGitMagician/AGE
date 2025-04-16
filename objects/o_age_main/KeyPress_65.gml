@@ -1,3 +1,3 @@
 txr_run(@'
-		dialog.stop();
+		dTestBranch1.start();
 		');
