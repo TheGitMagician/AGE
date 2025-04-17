@@ -1,11 +1,13 @@
 function Character() constructor
 {
+	script_name = "";
+	
 	enabled = true;
-	room_curr = undefined;
+	room_current = undefined;
 	room_prev = undefined;
 	x = 0;
 	y = 0;
-	name = "Egon";
+	name = "";
 	
 	blocked = false;
 	
@@ -21,6 +23,9 @@ function Character() constructor
 	yend = 0;
 	walk_speed = 2;
 	walk_anim_speed = 0.2;
+	
+	inventory_items = []; //each entry is an array: [item_reference, quantity]
+	active_inventory_item = undefined;
 	
 	direction = 0; //0=down, 1=up, 2=right, 3=left
 
@@ -54,10 +59,8 @@ function Character() constructor
 		{
 			var asset_index = asset_get_index(name);
 			if (asset_index == -1)
-			{
-				show_debug_message("AGE: `"+name+"` - No matching asset found for the animation. Asset must be the exact name or end in '_down', '_up', '_right', '_left'.");
-				return;
-			}
+			{ show_debug_message("AGE: `"+name+"` - No matching asset found for the animation. Asset must be the exact name or end in '_down', '_up', '_right', '_left'.");
+				return; }
 			sprite_down = asset_index;		
 			sprite_up = asset_index;				
 			sprite_right = asset_index;
@@ -97,10 +100,8 @@ function Character() constructor
 	{
 		var asset_index = asset_get_index(_name);
 		if (asset_index == -1)
-		{
-			show_debug_message("AGE: `"+_name+"` - No matching asset found for the animation. Asset must be the exact name.");
-			return;
-		}
+		{ show_debug_message("AGE: `"+_name+"` - No matching asset found for the animation. Asset must be the exact name.");
+			return; }
 		
 		animate_sprite_index_before_animation = sprite_index;
 		animate_image_index_before_animation = image_index;
@@ -183,17 +184,15 @@ function Character() constructor
 	
 	static change_room = function(new_room)
 	{
-		room_prev = room_curr;
-		room_curr = new_room;
+		room_prev = room_current;
+		room_current = new_room;
 	}
 	
 	static say = function(text)
 	{
-		if (room_curr != room)
-		{
-			show_debug_message("AGE: Warning: Character `"+name+"` cannot say anything because it's not in the current room.");
-			return;
-		}
+		if (room_current != room)
+		{ show_debug_message("AGE: Warning: Character `"+script_name+"` cannot say anything because it's not in the current room.");
+			return; }
 		
 		var i,pos;
 	
@@ -227,9 +226,9 @@ function Character() constructor
 	
 	static walk = function(_xend,_yend,_blocking)
 	{
-		if (room_curr != room)
+		if (room_current != room)
 		{
-			show_debug_message("AGE: Warning: Character `"+name+"` not moved because it's not in the current room.");
+			show_debug_message("AGE: Warning: Character `"+script_name+"` not moved because it's not in the current room.");
 			return;
 		}
 		
@@ -272,5 +271,109 @@ function Character() constructor
 			blocked = true;
 			txr_wait(-1);
 		}
+	}
+	
+	static add_inventory = function(_item, _quantity=1, _at_index=-1)
+	{
+		if (!is_instanceof(_item,Inventory_Item))
+		{ show_debug_message("AGE: Character.add_inventory(): Supplied item is not a valid inventory item.");
+			return; }
+		
+		if (_quantity <= 0)
+		{ show_debug_message("AGE: Character.add_inventory(): Quantity has to be larger than 0.");
+			return; }
+		
+		if ((_at_index < -1) || (_at_index > array_length(inventory_items)))
+		{ show_debug_message("AGE: Character.add_inventory(): Insertion index outside the allowed range `-1 - "+string(array_length(inventory_items))+"`.");
+			return; }
+		
+		var i, n=array_length(inventory_items), has_item_already_at_slot=-1;
+		
+		for (i=0; i<n; i++)
+		{
+			if (inventory_items[i][0] == _item)
+			{ has_item_already_at_slot = i; break; }
+		}		
+		
+		if (has_item_already_at_slot == -1)
+		{
+			//character doesn't have item yet
+			//so add it to the end of the list or insert it at the given index
+			if (_at_index == -1)	array_push(inventory_items, [_item, _quantity]);
+			else									array_insert(inventory_items,_at_index, [_item, _quantity]);
+		}
+		else
+		{
+			//character has item already so increase its quantity
+			if (_at_index != -1)
+				show_debug_message("AGE: Character.add_inventory(): Character already has this inventory item at slot "+string(has_item_already_at_slot)+". Ignoring insertion index.");
+			
+			inventory_items[has_item_already_at_slot][1] += _quantity;
+		}
+		
+		//@TODO: trigger update of inventory UI?
+		
+		//@TODO: trigger an on_event for inventory_add
+	}
+	
+	static lose_inventory = function(_item, _quantity=1)
+	{
+		if (!is_instanceof(_item,Inventory_Item))
+			{ show_debug_message("AGE: Character.lose_inventory(): Supplied item is not a valid inventory item.");
+				return; }
+		
+		if (_quantity <= 0)
+			{ show_debug_message("AGE: Character.lose_inventory(): Quantity has to be larger than 0.");
+				return; }
+		
+		var i, n=array_length(inventory_items), item_is_at_slot=-1;
+		
+		for (i=0; i<n; i++)
+		{
+			if (inventory_items[i][0] == _item)
+				{ item_is_at_slot = i; break; }
+		}
+		
+		if (item_is_at_slot == -1)
+			{ show_debug_message("AGE: Character.lose_inventory(): Character doesn't have item "+_item.script_name+".");
+				return; }
+		
+		var original_quantity_of_item = inventory_items[item_is_at_slot][1];
+		
+		//remove the supplied quantity of the item
+		inventory_items[item_is_at_slot][1] -= _quantity;
+		
+		if (inventory_items[item_is_at_slot][1] < 0)
+			show_debug_message("AGE: Character.lose_inventory(): Character only had "+string(original_quantity_of_item)+" of item `"+_item.script_name+"`. Removed all of them. Maybe check the quantity before removing the item.");
+		
+		//if none of the item is remaining then remove the inventory slot
+		if (inventory_items[item_is_at_slot][1] <= 0)
+			array_delete(inventory_items,item_is_at_slot,1);
+		
+		if (active_inventory_item == _item)
+			active_inventory_item = undefined;
+			//@TODO: force update of cursor mode?
+		
+		//@TODO: trigger update of inventory UI?
+		
+		//@TODO: trigger an on_event for inventory_lose
+	}
+	
+	static get_active_inventory_item = function()	
+	{
+		return active_inventory_item;
+	}
+	
+	static set_active_inventory_item = function()	
+	{
+		return active_inventory_item;
+	}
+	
+	testerei = false;
+	
+	static __set_testerei = function(_value)
+	{
+		show_message("Testing!");
+		testerei = _value;
 	}
 }

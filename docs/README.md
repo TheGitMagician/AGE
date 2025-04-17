@@ -1,3 +1,7 @@
+<p style="text-align: center;">
+  <img src="https://raw.githubusercontent.com/TheGitMagician/AGE/master/options/main/template_image.png" alt="AGE Logo" style="max-width: 100%;">
+</p>
+
 # AGE
  Adventure Game Engine for GameMaker
 

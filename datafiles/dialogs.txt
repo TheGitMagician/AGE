@@ -1,48 +1,48 @@
 === dTest
 @S
-indi: Hey, nice to see you!
+cIndi: Hey, nice to see you!
 return
 
 @1 Where am I standing?
-indi: Let's see where I stand.//comment
+cIndi: Let's see where I stand.//comment
 //run-script play_animation
-  if (indi.x < 160)
+  if (cIndi.x < 160)
   {
-    indi.face_direction(eDirDown);
-    indi.say("I stand in the left side of the room.");
+    cIndi.face_direction(eDirDown);
+    cIndi.say("I stand in the left side of the room.");
   }
   else
   {
-    indi.say("I stand in the right side of the room. Strange.");
+    cIndi.say("I stand in the right side of the room. Strange.");
     current_dialog_stop();
   }
 
-indi: That was fascinating.
+cIndi: That was fascinating.
 //option-off-for-now 1
 return
 
 @2 Let's talk about a branch.
-indi: Let's go to another dialog.
+cIndi: Let's go to another dialog.
 //option-off-for-now 2
 goto-dialog dTestBranch1
 //return
 
 @3 Goodbye.
-indi: I better get going.
+cIndi: I better get going.
 //option-off-for-now 3
 stop
 
 === dTestBranch1
 @S
-indi: Oh, we are in this branch again!
+cIndi: Oh, we are in this branch again!
 return
 
 @1 Anything new?
-indi: Anything new around here now?
+cIndi: Anything new around here now?
   //dTest.set_option_state(1,eOptionOffForever);
 option-off-for-now 1
 return
 
 @2 Let's get back to our main topic.
-indi: We should talk about more important stuff.
+cIndi: We should talk about more important stuff.
 goto-previous

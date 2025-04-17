@@ -35,7 +35,7 @@ for (i=0; i<n; i++)
 {
 	char = characters[i];
 	
-	//if ((char.room_curr != room) || (char.enabled == false)) continue;
+	//if ((char.room_current != room) || (char.enabled == false)) continue;
 	//show_debug_message(char.name)
 	
 	//@TOOD: we're checking char.walking here but in update_character_move() there is another check. Only one is needed. Perhaps this one here is better.

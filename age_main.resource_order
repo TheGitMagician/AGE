@@ -5,6 +5,7 @@
     {"name":"AGE Adventure Game Engine","order":1,"path":"folders/Modules/AGE Adventure Game Engine.yy",},
     {"name":"Character Structs and Functions","order":2,"path":"folders/Modules/AGE Adventure Game Engine/Character Structs and Functions.yy",},
     {"name":"Dialog Structs and Functions","order":3,"path":"folders/Modules/AGE Adventure Game Engine/Dialog Structs and Functions.yy",},
+    {"name":"Inventory Structs and Functions","order":4,"path":"folders/Modules/AGE Adventure Game Engine/Inventory Structs and Functions.yy",},
     {"name":"Objects","order":10,"path":"folders/Objects.yy",},
     {"name":"Hat","order":1,"path":"folders/Objects/Hat.yy",},
     {"name":"Sprites","order":1,"path":"folders/Objects/Hat/Sprites.yy",},
