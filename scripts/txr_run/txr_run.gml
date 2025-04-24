@@ -17,7 +17,8 @@ function txr_run(_code, _thread_type=txr_thread_type.standard)
 	
 	//start the thread
 	var result = undefined;
-	switch (txr_thread_resume(th)) {
+	switch (txr_thread_resume(th))
+	{
 		//the thread runs completely to the end without any blocking commands
 		//in that case it can be destroyed immediately - unless it is a rep_exec or rep_exec_always which get restarted every frame!
 		case txr_thread_status.finished:
@@ -34,17 +35,9 @@ function txr_run(_code, _thread_type=txr_thread_type.standard)
 			txr_thread_destroy(th);
 			return -1;
 		//the other option is that the thread yields (because of a blocking AGE function).
-		//in that case the thread is later resumed by o_txr_dummy which also checks if it can be destroyed afterwards
+		//in that case the thread is later resumed by TXR_Yield_Manager which also checks if it can be destroyed afterwards
 	}
 	//the variable `result` contains the return value of the finished script - in the case we need to use it
-	
-	
-	
-	//if the thread is a dialog thread then store it in the DialogManager in case it has to be stopped by some other process/script while it is running
-	if (_thread_type == txr_thread_type.dialog)
-	{
-		
-	}
 	
 	
 	

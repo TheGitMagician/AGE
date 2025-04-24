@@ -41,11 +41,16 @@ txr_function_add("current_dialog_goto_previous", txr_dialog_goto_previous,0);
 txr_function_add("current_dialog_goto_dialog", txr_dialog_goto_dialog,1);
 txr_function_add("current_dialog_stop", txr_dialog_stop,0);
 
+txr_function_add("start_cutscene", txr_start_cutscene,0);
+txr_function_add("end_cutscene", txr_end_cutscene,0);
+txr_function_add("skip_cutscene", txr_skip_cutscene,0);
+
+txr_function_add("save_game", txr_save_game,1);
+txr_function_add("load_game", txr_load_game,1);
+
+
 //provide the default function that is called when a function is unknown to TXR
 txr_function_default = scr_txr_demo_default_func;
-
-//create the dummy instance (e.g. used for running the timers while waiting until resuming a thread)
-dummy = instance_create_depth(0, 0, 0, o_txr_dummy);
 
 //@TODO: delete this part because the threads will manage their own destruction in teh future
 /*

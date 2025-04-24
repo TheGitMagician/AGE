@@ -29,7 +29,7 @@
   ],
   "name":"s_indi_standard_up",
   "nineSlice":null,
-  "origin":7,
+  "origin":9,
   "parent":{
     "name":"Indi",
     "path":"folders/Sprites/Characters/Indi.yy",
@@ -100,7 +100,7 @@
     "visibleRange":null,
     "volume":1.0,
     "xorigin":8,
-    "yorigin":48,
+    "yorigin":47,
   },
   "swatchColours":null,
   "swfPrecision":2.525,

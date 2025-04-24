@@ -1,10 +1,6 @@
-//unload repeatedly execute scripts for this room
-if (thread_room_repeatedly_execute != undefined)
-{
-	txr_thread_destroy(thread_room_repeatedly_execute);
-}
+//exit if this is not an AGE room (all AGE rooms need to have the tag "AGE")
+if (!asset_has_tags(room, "AGE", asset_room))
+	exit
 
-if (thread_room_repeatedly_execute_always != undefined)
-{
-	txr_thread_destroy(thread_room_repeatedly_execute_always);
-}
+//unload repeatedly execute scripts for this room
+unload_room_threads();

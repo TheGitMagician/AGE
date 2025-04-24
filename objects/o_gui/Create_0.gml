@@ -1,26 +1,48 @@
+display_set_gui_size(320,200);
+
 statusline = "";
 
-li_textblocks = ds_list_create();
+textblocks = [];
 
-function textblock(x,y,t,dur) constructor
+function Textblock(_x,_y,_text,_duration,_color=c_white) constructor
 {	
-	xpos = x;
-	ypos = y;
-	text = t;
-	duration = dur;
+	xpos = _x;
+	ypos = _y;
+	text = _text;
+	duration = _duration;
+	color = _color;
 	
-	static countdown = function()
+	static update = function()
 	{
 		duration --;
+		
 		if (duration <= 0)
 		{
-			var i = ds_list_find_index(o_gui.li_textblocks,self);
-			ds_list_delete(o_gui.li_textblocks,i);
+			var i = array_get(textblocks,self);
+			array_delete(textblocks,i,1);
 		}
 	}
 }
 
-function show_text(x,y,t,dur)
+function create_textblock(_x,_y,_text,_duration,_color)
 {
-	ds_list_add(li_textblocks, new textblock(x,y,t,dur));
+	var t = new Textblock(_x,_y,_text,_duration,_color);
+	
+	array_push(textblocks, t);
+	
+	return t;
+}
+
+function delete_textblock(_id)
+{
+	var i = array_get_index(textblocks,_id);
+	
+	if (i == -1) return;
+	
+	array_delete(textblocks,i,1);
+}
+
+function delete_all_textblocks()
+{
+	array_delete(textblocks,0,array_length(textblocks));
 }

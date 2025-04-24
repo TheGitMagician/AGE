@@ -6,5 +6,4 @@ instance_create_layer(0,0,"Instances",o_txr);
 instance_create_layer(0,0,"Instances",o_gui);
 
 
-
 room_goto(rm_cave);

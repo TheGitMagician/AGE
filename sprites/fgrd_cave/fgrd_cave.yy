@@ -2,7 +2,7 @@
   "$GMSprite":"",
   "%Name":"fgrd_cave",
   "bboxMode":0,
-  "bbox_bottom":27,
+  "bbox_bottom":91,
   "bbox_left":0,
   "bbox_right":319,
   "bbox_top":0,
@@ -16,7 +16,7 @@
   ],
   "gridX":0,
   "gridY":0,
-  "height":28,
+  "height":92,
   "HTile":false,
   "layers":[
     {"$GMImageLayer":"","%Name":"e9457b9a-b797-4ac3-94d3-9ff4eb7e19bd","blendMode":0,"displayName":"default","isLocked":false,"name":"e9457b9a-b797-4ac3-94d3-9ff4eb7e19bd","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},

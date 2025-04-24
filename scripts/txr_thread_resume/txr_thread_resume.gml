@@ -89,15 +89,15 @@ function txr_thread_resume(th/*:txr_thread*/, val = undefined) {
 				ds_stack_push(stack, a);
 				break;
 			case txr_action.ident:
-				if (th[@txr_thread.scope][$ q[2]] == undefined) {
-					halt = "Struct or variable `" + q[2] + "` not found.";
+				if (q[2] == undefined) {
+					halt = "Struct or variable `" + q[2] + "` not found. Cannot get it.";
 					continue;
 				}
 				ds_stack_push(stack, th[@txr_thread.scope][$ q[2]]); //was originally: ds_stack_push(stack, self[$ q[2]]);
 				break;
 			case txr_action.set_ident:
 				if (th[@txr_thread.scope][$ q[2]] == undefined) {
-					halt = "Struct or variable `" + q[2] + "` not found.";
+					halt = "Struct or variable `" + q[2] + "` not found. Cannot set it.";
 					continue;
 				}
 				th[@txr_thread.scope][$ q[2]] = ds_stack_pop(stack); //was originally: self[$ q[2]] = ds_stack_pop(stack);
@@ -108,7 +108,7 @@ function txr_thread_resume(th/*:txr_thread*/, val = undefined) {
 					halt = "The struct or instance you're trying to access doesn't exist.";
 					continue;
 				} else {
-					if (variable_instance_get(v, q[2]) == undefined) {
+					if (variable_instance_exists(v, q[2]) == false) {
 						halt = "The variable or method `" + q[2] + "` you're trying to access doesn't exist.";
 						continue;
 					}

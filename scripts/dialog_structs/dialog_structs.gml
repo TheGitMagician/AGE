@@ -62,11 +62,6 @@ function Dialog(_dialog_manager) constructor
 			if (th != -1) manager.currently_active_txr_thread = th;
 		}
 	}
-	
-	static get_option_count = function()
-	{
-		return option_count;
-	}
 
 	static get_option_state = function(_option_nr)
 	{
@@ -107,7 +102,7 @@ function Dialog(_dialog_manager) constructor
 		return option_text[_option_nr];
 	}
 	
-	static get_has_option_been_chosen = function(_option_nr)
+	static has_option_been_chosen = function(_option_nr)
 	{
 		//check if option exists
 		if ((_option_nr < 1) || (_option_nr > option_count-1))
@@ -125,11 +120,6 @@ function Dialog(_dialog_manager) constructor
 			return; }
 		
 		option_flags[_option_nr][__AGE_DLG_OPTN_FLG_WAS_CHOSEN] = _chosen;
-	}
-	
-	static get_script_name = function()
-	{
-		return script_name;
 	}
 	
 	//@DEBUG
@@ -160,7 +150,7 @@ function Dialog_Manager() constructor
 	previous_dialog = undefined; //pointer to the previous dialog struct (if a dialog is currently running)
 	currently_executed_option = -1;
 	currently_active_txr_thread = undefined; //pointer to the TXR thread that stores the currently running dialog script	
-	show_dialog_options = false;
+	options_are_displayed = false;
 	handing_over_from_other_dialog = false; //is true only when one running dialog hands over to another dialog (set in goto_dialog() - which can also be triggered from goto_previous())
 	room_at_dialog_start = noone; //tracks the room so that the dialog can be stopped if the room has been changed during the conversation
 	
@@ -172,13 +162,17 @@ function Dialog_Manager() constructor
 	
 	static load_file = function(_filename)
 	{
+		//returns true if file was parsed successfully or false if there were errors during parsing
+		//@TODO: should the function store the parsed dialogs locally until the parsing is finished and only then
+		//transfer them to o_age_main? Right now, if a parse error happens, all the dialogs that have been parsed
+		//already are stored in o_age_main and the other ones aren't.
 		var buffer,lines,line,i,current_dialog=undefined,current_option_id=-1,current_script,o,n,tt=[];
 		
 		//load file
 		buffer = buffer_load(working_directory + _filename);	
 		if (buffer == -1)
 		{ show_debug_message("AGE: Dialog File `"+_filename+"` couldn't be loaded. File doesn't exist or is corrupt.");
-			return -1; }	
+			return false; }
 		
 		lines = buffer_read(buffer, buffer_string);
 		buffer_delete(buffer);
@@ -213,10 +207,15 @@ function Dialog_Manager() constructor
 					current_dialog.option_script[current_option_id] = current_script;
 					current_option_id = -1;
 				}
-					
-				//create an instance variable for the finished struct of the *previous* dialog so that it can be accessed by TXR scripts			
+				
+				// -------- this is where a finished dialog is transferred into the game ----------
+				//create an instance variable for the finished struct of the *previous* dialog so that it can be accessed by TXR scripts
+				//and add it to the dialog array
 				if (current_dialog != undefined)
+				{
 					variable_instance_set(o_age_main,current_dialog.script_name,current_dialog);
+					array_push(o_age_main.dialogs,current_dialog);
+				}
 				
 				//then start a new dialog struct
 				line = string_replace(line,"===","");
@@ -324,9 +323,12 @@ function Dialog_Manager() constructor
 				catch(_error)
 				{
 					show_message("AGE: Error parsing dialog file `"+_filename+"`. Stopped at dialog `"+current_dialog.script_name+"` because the following line couldn't be parsed:\n"+line);
+					return false
 				}
 			}
 		}
+		
+		return true;
 	}
 	
 	static return_to_options = function()
@@ -365,7 +367,7 @@ function Dialog_Manager() constructor
 		}
 		
 		currently_executed_option = -1;
-		show_dialog_options = true;
+		options_are_displayed = true;
 	}
 	
 	static goto_previous = function()
@@ -432,7 +434,7 @@ function Dialog_Manager() constructor
 		current_dialog = undefined;
 		previous_dialog = undefined;
 		currently_executed_option = -1;
-		show_dialog_options = false;
+		options_are_displayed = false;
 		currently_active_txr_thread = undefined;
 		handing_over_from_other_dialog = false;
 		room_at_dialog_start = noone;
@@ -462,7 +464,7 @@ function Dialog_Manager() constructor
 		//run option
 		d.option_flags[_option_nr][__AGE_DLG_OPTN_FLG_WAS_CHOSEN] = true;
 		
-		show_dialog_options = false;
+		options_are_displayed = false;
 		currently_executed_option = _option_nr;
 		
 		var th;
@@ -475,25 +477,15 @@ function Dialog_Manager() constructor
 		else return false;
 	}
 	
-	static are_options_displayed = function()
-	{
-		return show_dialog_options;
-	}
-	
-	static get_current_dialog = function()
-	{
-		return current_dialog;
-	}
-	
-	static get_current_option = function()
-	{
-		return currently_executed_option;
-	}
-	
 	static get_id_by_name = function(_script_name)
 	{
 		if (variable_instance_exists(o_age_main,_script_name))
-			return variable_instance_get(o_age_main,_script_name);
+		{
+			if (is_instanceof(variable_instance_get(o_age_main, _script_name), Dialog))
+				return variable_instance_get(o_age_main,_script_name);
+			else
+				return undefined;
+		}
 		else
 			return undefined;
 	}

@@ -1,11 +1,25 @@
-var i,n,char;
+//exit if this is not an AGE room (all AGE rooms need to have the tag "AGE")
+if (!asset_has_tags(room, "AGE", asset_room))
+	exit
 
-n = array_length(characters);
+
+//mp_grid_draw(o_age_main.pathfinder.mp_grid);
+
+
+var i,n;
+
+n = array_length(draw_order);
 for (i=0; i<n; i++)
 {
-	char = characters[i];
-	
-	if ((char.room_current != room) || (char.enabled == false)) continue; //@TODO: manage a list with all chars that have to be drawn instead of always looping through all of them. Update the list when functions like change_room() or enable() are called
-	
-	with (char) character_draw();
+	draw_order[i].__draw();
 }
+
+if (show_walkareas)
+{
+	walkarea_manager.debug_draw();
+}
+
+//if (path_exists(pathfinder.current_path))
+//{
+//	draw_path(pathfinder.current_path,0,0,true);
+//}

@@ -11,17 +11,36 @@ function txr_compile_getter(q) {
 				out.add([txr_action.call, q[1], scr_txr_demo_global_get, 1]);
 			} else
 			//*/
-			if (ds_map_exists(global.txr_constant_map, s)) {
+			if (ds_map_exists(global.txr_constant_map, s))
+			{
+				//identifier is a constant that was added via txr_constant_add()
 				var val = global.txr_constant_map[?s];
 				if (is_string(val)) {
-					show_message(q[1]);
 					ds_list_add(out, [txr_action._string, q[1], val]);
 				} else {
 					ds_list_add(out, [txr_action.number, q[1], val]);
 				}
-			} else if (ds_map_exists(txr_build_locals, s)) {
+			}
+			else if (ds_map_exists(txr_build_locals, s))
+			{
+				//identifier is a local variable that was defined inside the TXR script via the keyword `var`
 				ds_list_add(out, [txr_action.get_local, q[1], s]);
-			} else {
+			} 
+			else if (asset_get_index(q[2]) != -1)
+			{
+				//identifier is an asset from the game
+				if ((!string_starts_with(q[2],"rm")) && (!string_starts_with(q[2],"s"))) 
+					return txr_throw_at("Only assets starting with 'rm' or 's' can be accessed from AGL scripts.", q);
+				
+				ds_list_add(out, [txr_action.number, q[1], asset_get_index(q[2])]);
+			}
+			else
+			{
+				//identifier is none of the above - so should be a variable from o_age_main
+				//this is to ensure that TXR is sandboxed and cannot simply access any variable from any object
+				if (variable_instance_exists(o_age_main,q[2]) == false) 
+					return txr_throw_at("No matching struct/variable/asset `"+q[2]+"` can be found.", q);
+				
 				ds_list_add(out, [txr_action.ident, q[1], s]);
 			}
 			return false;
