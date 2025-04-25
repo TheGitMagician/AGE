@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"global_runtime_functions",
+  "%Name":"age_global_structs",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"global_runtime_functions",
+  "name":"age_global_structs",
   "parent":{
     "name":"Global Structs and Functions",
     "path":"folders/Modules/AGE Adventure Game Engine/Global Structs and Functions.yy",

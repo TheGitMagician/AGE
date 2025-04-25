@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"walkarea_structs",
+  "%Name":"age_walkarea_structs",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"walkarea_structs",
+  "name":"age_walkarea_structs",
   "parent":{
     "name":"Pathing",
     "path":"folders/Modules/AGE Adventure Game Engine/Pathing.yy",

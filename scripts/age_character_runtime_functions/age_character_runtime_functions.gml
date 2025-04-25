@@ -10,7 +10,10 @@ function update_character_move()
 		walking = false;
 		
 		if (path_exists(movement_path))
+		{
 			path_delete(movement_path);
+			movement_path = noone;
+		}
 		
 		image_index = 0;
 		image_speed = 0;

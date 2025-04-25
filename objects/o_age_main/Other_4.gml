@@ -12,4 +12,12 @@ walkarea_manager.room_start();
 pathfinder.room_start(walkarea_manager);
 
 //load repeatedly execute scripts for this room
-load_room_threads();
+//load_room_threads();
+
+//check if we are in a cutscene which is skipped
+if (continue_skipping_cutscene_after_room_change)
+{
+	continue_skipping_cutscene_after_room_change = false;
+	skipping_cutscene = true;
+	fast_forward();
+}

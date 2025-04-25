@@ -58,9 +58,13 @@ function Character() constructor
 	
 	talking = false;
 	talk_duration_remaining = 0;
+	talk_current_line = "";
 	talk_textblock = undefined; //the ID of the textblock in o_gui that displays the speech text
 	
 	speech_color = c_white;
+	
+	//variables only needed for de/serialization
+	movement_path_serialized = [];
 	
 	static set_animation = function(name)
 	{
@@ -222,7 +226,14 @@ function Character() constructor
 		o_age_main.pathfinder.update_mp_grid(o_age_main.walkarea_manager);
 		
 		if (is_the_player)
-			room_goto(current_room);
+		{
+			if (o_age_main.skipping_cutscene)
+			{
+				o_age_main.continue_skipping_cutscene_after_room_change = true;
+				o_age_main.skipping_cutscene = false;
+			}
+			room_goto(current_room);			
+		}
 	}
 	
 	static say = function(text)
@@ -258,9 +269,10 @@ function Character() constructor
 		
 		talking = true;
 		talk_duration_remaining = 20;
+		talk_current_line = text;
 		
 		if (!o_age_main.skipping_cutscene)
-			talk_textblock = o_gui.create_textblock(x,y-sprite_get_height(sprite_index),text,talk_duration_remaining,speech_color);
+			talk_textblock = o_gui.create_textblock(self,text,x,y-sprite_get_height(sprite_index),talk_duration_remaining);
 		
 		blocked = true;
 		yield_manager = new TXR_Yield_Manager(txr_thread_current, true);
@@ -289,9 +301,7 @@ function Character() constructor
 		if (path == undefined)
 		{ show_debug_message("AGE: Warning: No path to provided endpoint found.");
 			return; }
-		
-		
-		
+				
 		movement_path = path_duplicate(path);
 		movement_percent_along_path = 0;
 		movement_next_direction_check = 0;
@@ -509,12 +519,33 @@ function Character() constructor
 		o_age_main.player = self;
 		
 		if (current_room != room)
-			change_room(current_room);
+		{
+			if (o_age_main.skipping_cutscene)
+			{
+				o_age_main.continue_skipping_cutscene_after_room_change = true;
+				o_age_main.skipping_cutscene = false;
+			}
+			room_goto(current_room);
+		}
 	}
 	
 	static __serialize = function()
 	{
-		
+		//save current movement path by turning its points into an array and saving that
+		if (path_exists(movement_path))
+		{
+			movement_path_serialized = age_convert_path_to_array(movement_path);
+		}
+	}
+	
+	static __deserialize = function()
+	{
+		//load current movement path by turing the saved array into a path resource
+		if (array_length(movement_path_serialized) > 0)
+		{
+			movement_path = age_convert_array_to_path(movement_path_serialized);
+			movement_path_serialized = [];
+		}
 	}
 	
 	static __draw = function()

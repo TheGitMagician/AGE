@@ -19,7 +19,7 @@ if (show_walkareas)
 	walkarea_manager.debug_draw();
 }
 
-//if (path_exists(pathfinder.current_path))
+//if (path_exists(cIndi.movement_path))
 //{
-//	draw_path(pathfinder.current_path,0,0,true);
+//	draw_path(cIndi.movement_path,0,0,true);
 //}

@@ -22,12 +22,14 @@ function cave_doorway_look_at()
 		wait(30);
 		cSophia.say("Where are you going now?!");
 		wait(20);
-		cIndi.say("I will explore the other side of the cave.");
+		cIndi.say("I will explore the outside of the cave.");
 		cIndi.walk(20,150,eBlock);		
-		cIndi.say("It works!");
+		cIndi.say("See you!");
+		cIndi.change_room(rm_outside,190,110,eDirRight);
 		wait(20);
-		cSophia.say("Just great...");
-		cSophia.walk(170,100,eNoBlock);
+		cIndi.say("Looks nicer than I thought.");
+		//cSophia.say("Just great...");
+		//cSophia.walk(170,100,eNoBlock);
 		end_cutscene();
 		
 		

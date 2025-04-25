@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"pathfinder_structs",
+  "%Name":"age_pathfinder_structs",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"pathfinder_structs",
+  "name":"age_pathfinder_structs",
   "parent":{
     "name":"Pathing",
     "path":"folders/Modules/AGE Adventure Game Engine/Pathing.yy",

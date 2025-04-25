@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"dialog_structs",
+  "%Name":"age_dialog_structs",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"dialog_structs",
+  "name":"age_dialog_structs",
   "parent":{
     "name":"Dialog Structs and Functions",
     "path":"folders/Modules/AGE Adventure Game Engine/Dialog Structs and Functions.yy",

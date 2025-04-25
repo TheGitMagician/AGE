@@ -131,10 +131,37 @@ function Pathfinder() constructor
 		}
 		else //on walkareas
 		{
-			path_set_kind(current_path, 1);
+			path_set_kind(current_path, 0);
+			
+			//calculate the path to the goal
 			if (mp_grid_path(mp_grid, current_path, _xstart, _ystart, _xgoal, _ygoal, true) == true)
+			{
+				//@TODO this reduction of path points leads to the problem that the paths can lead through non-walkable areas
+				//if that happens and you try to start a new path exactly at that point, no valid path is found because the starting
+				//coordinates are outside of walkable areas
+				//one option would be to just reduce the resolution of the mp_grid
+				
+				//optimize path by reducing the number of path points to around 10%, keeping the first and last points intact
+				//var nr,i,optimize_amount,counter;
+				
+				//nr = path_get_number(current_path);
+				
+				//optimize_amount = max(5,nr div 10); //remain around 10% of path points, a minimum of 5 points
+				//counter = 0;
+				//for (i=nr-2; i>0; i--)
+				//{
+				//	if (counter < optimize_amount)
+				//	{
+				//		path_delete_point(current_path,i);
+				//		counter ++;
+				//	}
+				//	else
+				//		counter = 0;
+				//}
+				
 				return current_path;
-			else return undefined;
+			}				
+			else return undefined; //no path to goal could be found
 		}
 	}
 	

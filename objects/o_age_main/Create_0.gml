@@ -50,6 +50,7 @@ function initialize_variables()
 	//cutscene variables
 	in_cutscene = false;
 	skipping_cutscene = false;
+	continue_skipping_cutscene_after_room_change = false;
 
 	//savegame variables
 	saving_the_game_was_requested = -1; //is set to the save slot that should be saved at and waits until the game can be saved (see Step Event)
@@ -264,41 +265,52 @@ function save_game(_slot)
 	//returns true if saving was succesful
 	
 	//we don't have to check the validity of the savegame slot here because it is already checked in txr_save_game()
-	var s,j,f,filename,i;
+	var i,n,s,j,b,filename;
 	
 	filename = "savegame_"+string(_slot)+".txt";
+	
+	//----serialization begin
+	n = array_length(characters);
+	for (i=0; i<n; i++)
+		characters[i].__serialize();
 	
 	j = {};
 	j.version = "0.1.0";
 	j.datetime = date_current_datetime();
 	j.characters = characters;
-	j.inventory_items = inventory_items;
-	
-	
-	
-	//----serialization begin
-	s = json_stringify(j);
-	//for (i=0; i<array_length(characters); i++)
-	//{
-	//	s = json_stringify(characters[i]);
-	//}
-	
+	j.objects = objects;
+	j.inventory_items = inventory_items;		
 	//----serialization end
 	
-	//s = json_stringify(j);
-	
-	f = file_text_open_write(working_directory+filename);
-	if (f == -1)
-	{ show_debug_message("AGE: save_game(): Can't save. Couldn't open text file for saving.");
+	try
+		s = json_stringify(j);
+	catch(_e)
+	{ show_debug_message("AGE: save_game(): Can't save. Couldn't convert game data into JSON string.");
 		return false; }
 	
-	file_text_write_string(f,s);
+	b = buffer_create(1, buffer_grow, 1);
+	buffer_write(b, buffer_string, s);
 	
-	if (file_text_close(f) == false)
-	{ show_debug_message("AGE: save_game(): Can't save. Couldn't close text file for saving.");
+	try
+		buffer_save(b, working_directory+filename);
+	catch(_e)
+	{ show_debug_message("AGE: save_game(): Can't save. Couldn't write buffer to savegame file.");
+		buffer_delete(b);
 		return false; }
 	
-	show_debug_message(current_time);
+	buffer_delete(b);
+	
+	//f = file_text_open_write(working_directory+filename);
+	//if (f == -1)
+	//{ show_debug_message("AGE: save_game(): Can't save. Couldn't open text file for saving.");
+	//	return false; }
+	
+	//file_text_write_string(f,s);
+	
+	//if (file_text_close(f) == false)
+	//{ show_debug_message("AGE: save_game(): Can't save. Couldn't close text file for saving.");
+	//	return false; }
+	
 	return true;
 }
 
@@ -313,13 +325,13 @@ function load_game(_slot)
 	
 	b = buffer_load(working_directory+filename);
 	if (b == -1)
-	{ show_debug_message("AGE: load_game(): Can't load. Couldn't open the text file for loading.");
+	{ show_debug_message("AGE: load_game(): Can't load. Couldn't open the savegame file.");
 		return false; }
 	
 	try
 		s = buffer_read(b,buffer_string);
 	catch(_e)
-	{ show_debug_message("AGE: load_game(): Can't load. Couldn't read content of text file for loading.");
+	{ show_debug_message("AGE: load_game(): Can't load. Couldn't read the content of the savegame file.");
 		buffer_delete(b);
 		return false; }
 	
@@ -328,7 +340,7 @@ function load_game(_slot)
 	try	
 		j = json_parse(s);
 	catch(_e)
-	{ show_debug_message("AGE: load_game(): Can't load. Couldn't parse JSON string from file.");
+	{ show_debug_message("AGE: load_game(): Can't load. Couldn't generate game data from JSON string in the savegame file.");
 		return false; }
 	
 	// ----- at this point the game data has successfully been read from the savefile -> now load it into the game -----
@@ -344,7 +356,20 @@ function load_game(_slot)
 		if (characters[i].is_the_player)
 			o_age_main.player = characters[i];
 		
+		characters[i].__deserialize();
+		
 		variable_instance_set(self,characters[i].script_name,characters[i]); //add character's script name to instance variables so that it can be accessed by TXR
+	}
+	
+	//load objects
+	belongs_to_struct = static_get(Object);
+	for (i=0; i<array_length(j.objects); i++)
+	{
+		array_push(objects,j.objects[i]); //add object reference to objects array so that it can be processed in other events
+		
+		static_set(objects[i],belongs_to_struct);
+		
+		variable_instance_set(self,objects[i].script_name,objects[i]); //add object's script name to instance variables so that it can be accessed by TXR
 	}
 	
 	//load inventory items
@@ -353,7 +378,6 @@ function load_game(_slot)
 	{
 		array_push(inventory_items,j.inventory_items[i]); //add inventory item reference to inventory_items array so that it can be processed in other events
 		
-		array_push(inventory_items,j.inventory_items[i]);
 		static_set(inventory_items[i],belongs_to_struct);
 		
 		variable_instance_set(self,inventory_items[i].script_name,inventory_items[i]); //add inventory item's script name to instance variables so that it can be accessed by TXR

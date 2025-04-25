@@ -11,7 +11,10 @@ function update_object_move()
 		moving = false;
 		
 		if (path_exists(movement_path))
+		{
 			path_delete(movement_path);
+			movement_path = noone;
+		}
 		
 		if (blocked)
 		{

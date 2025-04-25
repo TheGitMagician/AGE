@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"object_runtime_functions",
+  "%Name":"age_object_structs",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"object_runtime_functions",
+  "name":"age_object_structs",
   "parent":{
     "name":"Object Structs and Functions",
     "path":"folders/Modules/AGE Adventure Game Engine/Object Structs and Functions.yy",

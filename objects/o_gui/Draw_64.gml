@@ -8,14 +8,13 @@ draw_text(160,150,string(o_age_main.in_cutscene))//statusline);
 
 
 //Draw Textblocks
+draw_set_halign(fa_center);
 draw_set_valign(fa_bottom);
 
 n = array_length(textblocks);
 for (i=0; i<n; i++)
 {
-	e = textblocks[i];
-	draw_set_color(e.color);
-	draw_text(e.xpos,e.ypos,e.text);
+	textblocks[i].draw();
 }
 
 draw_set_color(c_white);

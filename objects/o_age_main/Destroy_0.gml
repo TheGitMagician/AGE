@@ -1,2 +1,0 @@
-if (resetting_game)
-	instance_create_layer(0,0,"Instances",o_age_main);

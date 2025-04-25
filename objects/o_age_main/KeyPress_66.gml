@@ -7,13 +7,16 @@
 //	load_game(0);
 //	');
 
-txr_run(@'
-	if (cSophia.current_room == rm_cave)
-	{	
-		cSophia.change_room(rm_outside, 180, 110, eDirUp);
-	}
-	else
-	{
-		cSophia.change_room(rm_cave, 150, 90, eDirDown);
-	}
-	');
+cIndi.x = irandom_range(-100,room_width+100);
+cIndi.y = irandom_range(-100,room_height+100);
+
+//txr_run(@'
+//	if (cSophia.current_room == rm_cave)
+//	{	
+//		cSophia.change_room(rm_outside, 180, 110, eDirUp);
+//	}
+//	else
+//	{
+//		cSophia.change_room(rm_cave, 150, 90, eDirDown);
+//	}
+//	');

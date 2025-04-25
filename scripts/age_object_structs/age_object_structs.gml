@@ -15,8 +15,8 @@ function Object() constructor
 	yield_manager = undefined;
 
 	moving = false;
-	xend = 0;
-	yend = 0;
+	//xend = 0;
+	//yend = 0;
 	move_speed = 2;
 	
 	movement_path = noone;
