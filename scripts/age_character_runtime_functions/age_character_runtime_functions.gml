@@ -1,7 +1,7 @@
 //@TODO: Why are these functions in a separate file? Shouldn't they be bound to the Character struct as static functions?
 function update_character_move()
 {
-	if ((o_age_main.blocked) && (called_from_rep_exec_always == false)) return;
+	//if ((o_age_main.blocked) && (called_from_rep_exec_always == false)) return;
 	
 	if (!walking) return; //@TODO this check is redundant currently because it is also done in o_age_main's Step Event
 	
@@ -68,7 +68,7 @@ function update_character_move()
 
 function update_character_animation()
 {
-	if ((o_age_main.blocked) && (called_from_rep_exec_always == false)) return;
+	//if ((o_age_main.blocked) && (called_from_rep_exec_always == false)) return;
 	
 	if (!animating) return; //@TODO this check is redundant currently because it is also done in o_age_main's Step Event
 	
@@ -115,7 +115,7 @@ function update_character_animation()
 
 function update_character_say()
 {
-	if ((o_age_main.blocked) && (called_from_rep_exec_always == false)) return;
+	//if ((o_age_main.blocked) && (called_from_rep_exec_always == false)) return;
 	
 	if (!talking) return; //@TODO this check is redundant currently because it is also done in o_age_main's Step Event
 	
@@ -129,9 +129,11 @@ function update_character_say()
 		o_gui.delete_textblock(talk_textblock);
 		talk_textblock = undefined;
 		
-		
-		blocked = false;
-		yield_manager.continue_thread();
+		if (blocked)
+		{
+			blocked = false;
+			yield_manager.continue_thread();
+		}
 	}
 }
 

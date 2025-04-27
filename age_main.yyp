@@ -11,6 +11,7 @@
   "defaultScriptType":1,
   "Folders":[
     {"$GMFolder":"","%Name":"Dialogs","folderPath":"folders/Dialogs.yy","name":"Dialogs","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Scripts","folderPath":"folders/Scripts.yy","name":"Scripts","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Helper Functions","folderPath":"folders/Helper Functions.yy","name":"Helper Functions","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Helper Objects","folderPath":"folders/Helper Objects.yy","name":"Helper Objects","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Hotspots","folderPath":"folders/Helper Objects/Hotspots.yy","name":"Hotspots","resourceType":"GMFolder","resourceVersion":"2.0",},
@@ -87,6 +88,9 @@
     {"id":{"name":"age_walkarea_structs","path":"scripts/age_walkarea_structs/age_walkarea_structs.yy",},},
     {"id":{"name":"dialog_functions","path":"scripts/dialog_functions/dialog_functions.yy",},},
     {"id":{"name":"func_hotspot","path":"scripts/func_hotspot/func_hotspot.yy",},},
+    {"id":{"name":"game_on_start","path":"scripts/game_on_start/game_on_start.yy",},},
+    {"id":{"name":"global_repeatedly_execute_always","path":"scripts/global_repeatedly_execute_always/global_repeatedly_execute_always.yy",},},
+    {"id":{"name":"global_repeatedly_execute","path":"scripts/global_repeatedly_execute/global_repeatedly_execute.yy",},},
     {"id":{"name":"helper_functions","path":"scripts/helper_functions/helper_functions.yy",},},
     {"id":{"name":"repeatedly_execute_always_cave","path":"scripts/repeatedly_execute_always_cave/repeatedly_execute_always_cave.yy",},},
     {"id":{"name":"repeatedly_execute_cave","path":"scripts/repeatedly_execute_cave/repeatedly_execute_cave.yy",},},

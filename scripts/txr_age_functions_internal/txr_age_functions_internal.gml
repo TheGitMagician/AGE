@@ -20,10 +20,11 @@ function txr_age_thread_resume(_thread)
 			//in that case it can be destroyed immediately - unless it is a rep_exec or rep_exec_always which get restarted the next frame
 			txr_error = "";
 			result = _thread[txr_thread.result];
-			if ((_thread[txr_thread.type] != txr_thread_type.rep_exec) && (_thread[txr_thread.type] != txr_thread_type.rep_exec_always))
+			if ((_thread[txr_thread.type] != txr_thread_type.rep_exec) && (_thread[txr_thread.type] != txr_thread_type.rep_exec_always)
+					&& (_thread[txr_thread.type] != txr_thread_type.global_rep_exec) && (_thread[txr_thread.type] != txr_thread_type.global_rep_exec_always))
 			{
 				thread_still_exists = false;
-				txr_thread_destroy(_thread);				
+				txr_thread_destroy(_thread);
 			}
 			break;
 			
@@ -34,22 +35,17 @@ function txr_age_thread_resume(_thread)
 			txr_error = _thread[txr_thread.result];
 			show_debug_message(txr_error);
 			txr_thread_destroy(_thread);
-			if (_thread[txr_thread.type] != txr_thread_type.rep_exec)
-				o_age_main.thread_room_repeatedly_execute = undefined;
-			else if (_thread[txr_thread.type] != txr_thread_type.rep_exec_always)
-				o_age_main.thread_room_repeatedly_execute_always = undefined;
 			break;				
 		
 		case txr_thread_status.yield:
 			//special case for repeatedly_execute_always scripts: they must never yield because if they do,
 			//it means that they contain a blocking function which is not allowed in these script
-			if (_thread[txr_thread.type] != txr_thread_type.rep_exec_always)
+			if ((_thread[txr_thread.type] != txr_thread_type.rep_exec_always) && (_thread[txr_thread.type] != txr_thread_type.global_rep_exec_always))
 				break;
 			
 			thread_still_exists = false;
 			show_debug_message("AGE: repeatedly_execute_always script was stopped because it contains a blocking function which is not allowed.");
 			txr_thread_destroy(_thread);
-			o_age_main.thread_room_repeatedly_execute_always = undefined;
 			break;
 	}
 	

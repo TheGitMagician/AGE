@@ -23,6 +23,31 @@ function txr_wait(_steps)
 	o_age_main.global_manager.wait(_steps);
 }
 
+function txr_set_timer(_timer,_steps)
+{
+	o_age_main.global_manager.set_timer(_timer,_steps);
+}
+
+function txr_is_timer_expired(_timer)
+{
+	return o_age_main.global_manager.is_timer_expired(_timer);
+}
+
+function txr_stop_timer(_timer)
+{
+	o_age_main.global_manager.stop_timer(_timer);
+}
+
+function txr_get_timer_pos(_timer)
+{
+	return o_age_main.global_manager.get_timer_pos(_timer);
+}
+
+function txr_claim_event()
+{
+	o_age_main.global_manager.claim_event();
+}
+
 function txr_start_cutscene()
 {
 	if (o_age_main.in_cutscene)

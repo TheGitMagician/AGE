@@ -1,5 +1,6 @@
 //unload any remaining room threads
 unload_room_threads();
+unload_global_threads();
 
 //cleanup all game managers
 global_manager.__cleanup();

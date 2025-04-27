@@ -242,49 +242,43 @@ function Character() constructor
 		}
 	}
 	
-	static say = function(text)
+	static say = function(_text)
 	{
 		if (current_room != room)
 		{ show_debug_message("AGE: Warning: Character `"+script_name+"` cannot say anything because it's not in the current room.");
 			return; }
 		
-		var i,pos;
-	
-		//make sure GameMaker's newline characters are recognized
-		text = string_replace_all(text,"\\n","\n");
-
-		//replace [ characters with newline characters
-		i = 1;
-		pos = string_pos_ext("[", text, 1);
-		while (pos != 0)
-		{
-			if (string_char_at(text,pos-1) != "\\") text = string_replace_at(text, pos, "\n");
-			else text = string_delete(text, pos-1, 1);
-			pos = string_pos_ext("[", text, pos);
-		}
-	
-		//replace % characters with the matching additional argument (e.g. "Hello %", "World" -> "Hello World")
-		i = 1;
-		pos = string_pos_ext("%", text, 1);
-		while (pos != 0)
-		{
-			if (string_char_at(text,pos-1) != "\\") text = string_replace_at(text, pos, string(argument[i++]));
-			else text = string_delete(text, pos-1, 1);
-			pos = string_pos_ext("%", text, pos);
-		}
+		__parse_text(_text)
 		
 		talking = true;
 		__rep_exec_always_check();
 		
 		talk_duration_remaining = 20;
-		talk_current_line = text;
-		
+		talk_current_line = _text;
 		
 		if (!o_age_main.skipping_cutscene)
-			talk_textblock = o_gui.create_textblock(self,text,x,y-sprite_get_height(sprite_index),talk_duration_remaining);
+			talk_textblock = o_gui.create_textblock(self,_text,x,y-sprite_get_height(sprite_index),talk_duration_remaining);
 		
 		blocked = true;
 		yield_manager = new TXR_Yield_Manager(txr_thread_current, true);
+	}
+	
+	static say_background = function(_text)
+	{
+		if (current_room != room)
+		{ show_debug_message("AGE: Warning: Character `"+script_name+"` cannot say anything because it's not in the current room.");
+			return; }
+		
+		__parse_text(_text)
+		
+		talking = true;
+		__rep_exec_always_check();
+		
+		talk_duration_remaining = 20;
+		talk_current_line = _text;
+		
+		if (!o_age_main.skipping_cutscene)
+			talk_textblock = o_gui.create_textblock(self,_text,x,y-sprite_get_height(sprite_index),talk_duration_remaining);
 	}
 	
 	static walk = function(_xend,_yend,_blocking)
@@ -564,6 +558,35 @@ function Character() constructor
 		//this flag is then checked when the object is updated to make sure that the effect continues running even if the game is blocked
 		//if - and only if - the function was started from a rep_exec_always script
 		if (txr_thread_current[txr_thread.type] == txr_thread_type.rep_exec_always) called_from_rep_exec_always = true;
+	}
+	
+	static __parse_text = function(_text)
+	{
+		var text = _text;
+		var i,pos;
+	
+		//make sure GameMaker's newline characters are recognized
+		text = string_replace_all(text,"\\n","\n");
+
+		//replace [ characters with newline characters
+		i = 1;
+		pos = string_pos_ext("[", text, 1);
+		while (pos != 0)
+		{
+			if (string_char_at(text,pos-1) != "\\") text = string_replace_at(text, pos, "\n");
+			else text = string_delete(text, pos-1, 1);
+			pos = string_pos_ext("[", text, pos);
+		}
+	
+		//replace % characters with the matching additional argument (e.g. "Hello %", "World" -> "Hello World")
+		i = 1;
+		pos = string_pos_ext("%", text, 1);
+		while (pos != 0)
+		{
+			if (string_char_at(text,pos-1) != "\\") text = string_replace_at(text, pos, string(argument[i++]));
+			else text = string_delete(text, pos-1, 1);
+			pos = string_pos_ext("%", text, pos);
+		}
 	}
 	
 	static __serialize = function()

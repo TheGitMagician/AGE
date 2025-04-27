@@ -11,6 +11,11 @@ function repeatedly_execute_always_cave(){
 				oHatMoveAlways.move(oHatMoveAlways.x,64,eNoBlock,eAnywhere);
 			}
 		}
+		
+		if (is_timer_expired(1))
+		{
+			cSophia.say_background("Stop it, Indi!");
+		}
 		';
 	
 	return content;

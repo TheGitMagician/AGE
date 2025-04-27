@@ -18,12 +18,30 @@ enum txr_thread_type
 	standard,
 	dialog,
 	rep_exec,
-	rep_exec_always
+	rep_exec_always,
+	global_rep_exec,
+	global_rep_exec_always,
+	game_on_start
 }
+
+enum age_event
+{
+	//these values have to be powers of two because they are used to set the bitmask in the variable `event_claimed`
+	rep_exec = 1,
+	rep_exec_always = 2,
+}
+
+//@DEBUG
+threads = 0;
 
 function initialize_variables()
 {
+	if (!variable_instance_exists(self,"game_started"))
+		game_started = false; //make sure that this variable is really only set if the game has never been run before
+	
 	blocked = false;
+	
+	event_claimed = 0; //stores the bitmask of events that have been claimed by using the values from the enum `age_event`
 
 	draw_order = [];
 
@@ -41,6 +59,7 @@ function initialize_variables()
 
 	//repeatedly execute variables
 	thread_global_repeatedly_execute = undefined;
+	thread_global_repeatedly_execute_always = undefined;
 
 	thread_room_repeatedly_execute = undefined;
 	thread_room_repeatedly_execute_always = undefined;
@@ -74,14 +93,69 @@ function fast_forward()
 	}
 }
 
+function start_game()
+{
+	if (game_started) return;
+	
+	var script_asset;
+
+	script_asset = asset_get_index("game_on_start");
+	if (script_exists(script_asset))
+		txr_run(script_asset(), txr_thread_type.game_on_start);	
+	
+	game_started = true;
+}
+
 function unload_game()
 {
 	//since the game managers like Dialog_Manager don't hold any data on their own, they don't have to be re-initialized when the game is unloaded
 	//only the variables have to be reset - which also means that all characters/inventory items/dialogs, etc. will be unloaded
-	//since they are stored in the arrays in this object (like characters[])
+	//since they are stored in the arrays in this object (like characters[])	
+	
 	unload_room_threads();
+	unload_global_threads();
 	
 	initialize_variables();
+}
+
+function load_global_threads()
+{
+	var script_asset, th;
+
+	#region GLOBAL_REPEATEDLY_EXECUTE
+	script_asset = asset_get_index("global_repeatedly_execute");
+	if (script_exists(script_asset))
+	{
+		//create the repeatedly_execute thread
+		//this thread re-runs every frame until the room is left (at which point it is destroyed)
+		th = txr_run(script_asset(), txr_thread_type.global_rep_exec);
+		if (th != -1) thread_global_repeatedly_execute = th;
+	}
+	else
+		thread_global_repeatedly_execute = undefined;
+	#endregion
+	
+	#region GLOBAL_REPEATEDLY_EXECUTE_ALWAYS
+	script_asset = asset_get_index("global_repeatedly_execute_always");
+	if (script_exists(script_asset))
+	{
+		//create the repeatedly_execute_always thread
+		//this thread re-runs every frame until the room is left (at which point it is destroyed)
+		th = txr_run(script_asset(), txr_thread_type.global_rep_exec_always);
+		if (th != -1) thread_global_repeatedly_execute_always = th;
+	}
+	else
+		thread_global_repeatedly_execute_always = undefined;
+	#endregion
+}
+
+function unload_global_threads()
+{
+	if (thread_global_repeatedly_execute != undefined)
+	{
+		txr_thread_destroy(thread_global_repeatedly_execute);
+		thread_global_repeatedly_execute = undefined;
+	}
 }
 
 function load_room_threads()
@@ -89,37 +163,37 @@ function load_room_threads()
 	var script_name, script_asset, th;
 
 	#region REPEATEDLY_EXECUTE
-	//script_name = room_get_name(room);
-	//script_name = string_delete(script_name,1,3); //remove rm_ prefix
-	//script_name = "repeatedly_execute_"+script_name;
-	//script_asset = asset_get_index(script_name);
-	//if (script_exists(script_asset))
-	//{
-	//	//create the repeatedly_execute thread
-	//	//this thread re-runs every frame until the room is left (at which point it is destroyed)
-	//	th = txr_run(script_asset(), txr_thread_type.rep_exec);
-	//	if (th != -1) thread_room_repeatedly_execute = th;
-	//}
-	//else
-	//	thread_room_repeatedly_execute = undefined;
+	script_name = room_get_name(room);
+	script_name = string_delete(script_name,1,3); //remove rm_ prefix
+	script_name = "repeatedly_execute_"+script_name;
+	script_asset = asset_get_index(script_name);
+	if (script_exists(script_asset))
+	{
+		//create the repeatedly_execute thread
+		//this thread re-runs every frame until the room is left (at which point it is destroyed)
+		th = txr_run(script_asset(), txr_thread_type.rep_exec);
+		if (th != -1) thread_room_repeatedly_execute = th;
+	}
+	else
+		thread_room_repeatedly_execute = undefined;
 	#endregion
 
 	#region REPEATEDLY_EXECUTE_ALWAYS
-	//script_name = room_get_name(room);
-	//script_name = string_delete(script_name,1,3); //remove rm_ prefix
-	//script_name = "repeatedly_execute_always_"+script_name;
-	//script_asset = asset_get_index(script_name);
-	//if (script_exists(script_asset)){
-	//	//create the repeatedly_execute thread
-	//	//this thread re-runs every frame until the room is left (at which point it is destroyed)
+	script_name = room_get_name(room);
+	script_name = string_delete(script_name,1,3); //remove rm_ prefix
+	script_name = "repeatedly_execute_always_"+script_name;
+	script_asset = asset_get_index(script_name);
+	if (script_exists(script_asset)){
+		//create the repeatedly_execute thread
+		//this thread re-runs every frame until the room is left (at which point it is destroyed)
 	
-	//	//additionaly also mark this thread as rep_exec_always so that the callees of this thread
-	//	//know that they may perform code even when the game is blocked
-	//	th = txr_run(script_asset(), txr_thread_type.rep_exec_always);
-	//	if (th != -1) thread_room_repeatedly_execute_always = th;
-	//}
-	//else
-	//	thread_room_repeatedly_execute_always = undefined;
+		//additionaly also mark this thread as rep_exec_always so that the callees of this thread
+		//know that they may perform code even when the game is blocked
+		th = txr_run(script_asset(), txr_thread_type.rep_exec_always);
+		if (th != -1) thread_room_repeatedly_execute_always = th;
+	}
+	else
+		thread_room_repeatedly_execute_always = undefined;
 	#endregion
 }
 
@@ -265,6 +339,9 @@ function load_game(_slot)
 	if (player == undefined)
 	{ show_debug_message("AGE: load_game(): Can't load game. No character defined as the player character.");
 		return false; }
+		
+	//load global threads
+	load_global_threads();
 	
 	//change rooms if necessary, else restart the current room
 	if (player.current_room != room)
@@ -279,3 +356,5 @@ function load_game(_slot)
 
 initialize_variables();
 initialize_game_managers();
+//start_game() also has to be called - but ideally after all objects have been initialized, so currently it is stared in rm_init's Creation Code after all objects have been created
+//load_global_threads() also has to be called - but ideally after all objects have been initialized, so currently it is stared in rm_init's Creation Code after all objects have been created

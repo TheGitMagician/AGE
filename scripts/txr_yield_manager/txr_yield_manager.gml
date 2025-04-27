@@ -3,7 +3,7 @@ function TXR_Yield_Manager(_thread, _blocking=true) constructor
 	thread = _thread;
 	blocking = _blocking;
 	
-	function yield_thread() //this function is automatically run when the struct is instantiated (see last line)
+	static yield_thread = function() //this function is automatically run when the struct is instantiated (see last line)
 	{
 		txr_thread_yield();
 	
@@ -11,8 +11,14 @@ function TXR_Yield_Manager(_thread, _blocking=true) constructor
 		if (blocking)
 			o_age_main.blocked = true;
 	}
+	
+	static update = function()
+	{
+		//count down the yield timer
+		//if (!o_age_main.blocked)
+	}
 
-	function continue_thread()
+	static continue_thread = function()
 	{
 		//returns the result of the thread (or -1 if thread doesn't produce a result)
 		

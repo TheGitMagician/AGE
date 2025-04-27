@@ -2,25 +2,45 @@
 if (!asset_has_tags(room, "AGE", asset_room))
 	exit
 
-var i,n,char,obj,result;
+var i,n,char,obj,th;
 
 mx = mouse_x;
 my = mouse_y;
 
+event_claimed = 0;
+
 // ================ process repeatedly execute ================
 #region process repeatedly execute scripts
+//keep global_repeatedly_execute running
+if ((thread_global_repeatedly_execute != undefined) && (blocked == false) && (event_claimed & age_event.rep_exec == 0))
+{
+	txr_thread_reset(thread_global_repeatedly_execute);	
+	th = txr_age_thread_resume(thread_global_repeatedly_execute);
+	if (th == false) thread_global_repeatedly_execute = undefined; //the thread doesn't exist anymore (most likely due to an error)
+}
+
+//keep global_repeatedly_execute_always running
+if ((thread_global_repeatedly_execute_always != undefined) && (blocked == false) && (event_claimed & age_event.rep_exec_always == 0))
+{
+	txr_thread_reset(thread_global_repeatedly_execute_always);	
+	th = txr_age_thread_resume(thread_global_repeatedly_execute_always);
+	if (th == false) thread_global_repeatedly_execute_always = undefined; //the thread doesn't exist anymore (most likely due to an error)
+}
+
 //keep repeatedly_execute running
-if ((thread_room_repeatedly_execute != undefined) && (blocked == false))
+if ((thread_room_repeatedly_execute != undefined) && (blocked == false) && (event_claimed & age_event.rep_exec == 0))
 {
 	txr_thread_reset(thread_room_repeatedly_execute);	
-	txr_age_thread_resume(thread_room_repeatedly_execute);
+	th = txr_age_thread_resume(thread_room_repeatedly_execute);
+	if (th == false) thread_room_repeatedly_execute = undefined; //the thread doesn't exist anymore (most likely due to an error)
 }
 
 //keep repeatedly_execute_always running
-if (thread_room_repeatedly_execute_always != undefined)
+if ((thread_room_repeatedly_execute_always != undefined) && (event_claimed & age_event.rep_exec_always == 0))
 {
 	txr_thread_reset(thread_room_repeatedly_execute_always);
-	txr_age_thread_resume(thread_room_repeatedly_execute_always);
+	th = txr_age_thread_resume(thread_room_repeatedly_execute_always);
+	if (th == false) thread_room_repeatedly_execute_always = undefined; //the thread doesn't exist anymore (most likely due to an error)
 }
 #endregion
 

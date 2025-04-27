@@ -35,7 +35,15 @@ txr_constant_add("eAnywhere", true);
 //add AGE functions to TXR parser
 txr_function_add("wait",txr_wait,1);
 
-txr_function_add("show_message", scr_txr_demo_show_message,1);
+txr_function_add("set_timer",txr_set_timer,2);
+txr_function_add("is_timer_expired",txr_is_timer_expired,1);
+txr_function_add("stop_timer",txr_stop_timer,1);
+txr_function_add("get_timer_pos",txr_get_timer_pos,1);
+
+txr_function_add("claim_event",txr_claim_event,0);
+
+txr_function_add("show_message", txr_demo_show_message,1);
+txr_function_add("show_debug_message", txr_demo_show_debug_message,1);
 
 txr_function_add("current_dialog_return", txr_dialog_return,0);
 txr_function_add("current_dialog_goto_previous", txr_dialog_goto_previous,0);
@@ -61,5 +69,3 @@ txr_function_default = scr_txr_demo_default_func;
 threads = [];
 */
 
-//@DEBUG
-o_age_main.threads = 0;

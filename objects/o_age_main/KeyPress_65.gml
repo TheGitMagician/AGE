@@ -10,7 +10,9 @@
 //	');
 
 txr_run(@'
-	player.change_room(rm_outside);
+	cIndi.say("Just a normal sentence.");
 	');
+
+//cIndi.add_inventory(iMap);
 
 //loading_the_game_was_requested = 1;

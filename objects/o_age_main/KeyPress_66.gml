@@ -6,8 +6,13 @@
 //	load_game(0);
 //	');
 
-cIndi.x = irandom_range(-100,room_width+100);
-cIndi.y = irandom_range(-100,room_height+100);
+
+//txr_run(@'
+//	show_message(get_timer_pos(0));
+//	');
+	show_message(global_manager.get_timer_pos(0));
+//cIndi.x = irandom_range(-100,room_width+100);
+//cIndi.y = irandom_range(-100,room_height+100);
 
 //txr_run(@'
 //	if (cSophia.current_room == rm_cave)

@@ -1,6 +1,7 @@
 {
   "FolderOrderSettings":[
     {"name":"Dialogs","order":15,"path":"folders/Dialogs.yy",},
+    {"name":"Scripts","order":17,"path":"folders/Scripts.yy",},
     {"name":"Helper Functions","order":14,"path":"folders/Helper Functions.yy",},
     {"name":"Walkareas","order":1,"path":"folders/Helper Objects/Walkareas.yy",},
     {"name":"AGE Adventure Game Engine","order":1,"path":"folders/Modules/AGE Adventure Game Engine.yy",},
@@ -32,6 +33,8 @@
     {"name":"age_macros","order":1,"path":"scripts/age_macros/age_macros.yy",},
     {"name":"age_object_runtime_functions","order":1,"path":"scripts/age_object_runtime_functions/age_object_runtime_functions.yy",},
     {"name":"func_hotspot","order":2,"path":"scripts/func_hotspot/func_hotspot.yy",},
+    {"name":"game_on_start","order":1,"path":"scripts/game_on_start/game_on_start.yy",},
+    {"name":"global_repeatedly_execute_always","order":2,"path":"scripts/global_repeatedly_execute_always/global_repeatedly_execute_always.yy",},
     {"name":"repeatedly_execute_always_cave","order":5,"path":"scripts/repeatedly_execute_always_cave/repeatedly_execute_always_cave.yy",},
     {"name":"repeatedly_execute_cave","order":4,"path":"scripts/repeatedly_execute_cave/repeatedly_execute_cave.yy",},
     {"name":"room_script_cave","order":3,"path":"scripts/room_script_cave/room_script_cave.yy",},

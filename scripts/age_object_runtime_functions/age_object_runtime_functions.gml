@@ -1,6 +1,6 @@
 function update_object_move()
 {
-	if ((o_age_main.blocked) && (called_from_rep_exec_always == false)) return;
+	//if ((o_age_main.blocked) && (called_from_rep_exec_always == false)) return;
 	
 	if (!moving) return; //@TODO this check is redundant currently because it is also done in o_age_main's Step Event
 	
