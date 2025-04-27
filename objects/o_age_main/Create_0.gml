@@ -5,8 +5,6 @@ enum age
 	backward,
 	once,
 	loop,
-	block,
-	no_block,
 	sizeof,
 	option_on,
 	option_off,
@@ -69,8 +67,6 @@ function initialize_game_managers()
 	//load walkarea manager
 	walkarea_manager = new Walkarea_Manager();
 	show_walkareas = false; //@DEBUG!!! also delete the other occurances
-
-	pathfinder = new Pathfinder();
 }
 
 function create_character(_script_name, _settings_struct)

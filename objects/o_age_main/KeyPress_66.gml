@@ -1,7 +1,7 @@
-//show_debug_message(pathfinder.is_point_on_walkarea(mouse_x,mouse_y));
+//show_debug_message(walkarea_manager.is_point_on_walkarea(mouse_x,mouse_y));
 //show_walkareas = !show_walkareas;
 
-//pathfinder.calculate_path_to_point(cIndi.x,cIndi.y,mouse_x,mouse_y);
+//walkarea_manager.calculate_path_to_point(cIndi.x,cIndi.y,mouse_x,mouse_y);
 
 //txr_run(@'
 //	load_game(0);

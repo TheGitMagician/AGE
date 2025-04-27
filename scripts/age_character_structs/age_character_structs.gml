@@ -26,6 +26,8 @@ function Character() constructor
 	walk_speed = 2;
 	walk_anim_speed = 0.2;
 	
+	moving = false; //moving is walking without the walk animation
+	
 	movement_path = noone;
 	movement_percent_along_path = 0; //0-1
 	movement_check_direction_interval = 0.1;
@@ -119,7 +121,7 @@ function Character() constructor
 		}
 	}
 	
-	static animate = function(_name, _speed, _repeat_style=age.once, _blocking=age.no_block, _direction=age.forward, _first_frame=0)
+	static animate = function(_name, _speed, _repeat_style=age.once, _blocking=false, _direction=age.forward, _first_frame=0)
 	{
 		if (asset_get_type(_name) != asset_sprite)
 		{ show_debug_message("AGE: `"+_name+"` - No matching sprite asset found for the animation.");
@@ -145,7 +147,7 @@ function Character() constructor
 		
 		animating = true;
 		
-		if (_blocking == age.block)
+		if (_blocking)
 		{
 			blocked = true;
 			yield_manager = new TXR_Yield_Manager(txr_thread_current, true);
@@ -221,11 +223,9 @@ function Character() constructor
 		if (_dir != -1) face_direction(_dir);
 		
 		previous_room = current_room;
-		current_room = _new_room;
+		current_room = _new_room;		
 		
-		o_age_main.pathfinder.update_mp_grid(o_age_main.walkarea_manager);
-		
-		if (is_the_player)
+		if (is_the_player) //if the player character changes rooms then the new room has to be loaded
 		{
 			if (o_age_main.skipping_cutscene)
 			{
@@ -233,6 +233,10 @@ function Character() constructor
 				o_age_main.skipping_cutscene = false;
 			}
 			room_goto(current_room);			
+		}
+		else //if another character changes rooms then free its position on the mp_grid
+		{
+			if (solid) o_age_main.walkarea_manager.update_mp_grid();
 		}
 	}
 	
@@ -284,25 +288,24 @@ function Character() constructor
 		{ show_debug_message("AGE: Warning: Character `"+script_name+"` not moved because it's not in the current room.");
 			return; }
 		
-		//temporarily disable solid flag and re-calculate walkarea mask and pathfinding grid
+		//temporarily disable solid flag and re-calculate walkarea mask (which automatically also updates the mp_grid)
 		//this is necessary so that the character can start walking and isn't boxed in by its own blocking box in the pathfinding grid
 		if (solid)
 		{
 			solid = false;
 			o_age_main.walkarea_manager.update_walkarea_mask();
-			o_age_main.pathfinder.update_mp_grid(o_age_main.walkarea_manager);
 			solid = true;
 		}
 		
-		var goal_pos = o_age_main.pathfinder.find_nearest_point_on_walkarea(_xend,_yend);
+		var goal_pos = o_age_main.walkarea_manager.find_nearest_point_on_walkarea(_xend,_yend);
 		
-		var path = o_age_main.pathfinder.calculate_path_to_point(x,y,goal_pos[0],goal_pos[1]);
+		var path = o_age_main.walkarea_manager.calculate_path_to_point(x,y,goal_pos[0],goal_pos[1]);
 		
-		if (path == undefined)
+		if (path == noone)
 		{ show_debug_message("AGE: Warning: No path to provided endpoint found.");
 			return; }
 				
-		movement_path = path_duplicate(path);
+		movement_path = path_duplicate(path); //path has to be duplicated because the original path gets freed from memory as soon as calculate_path_to_point() has finished
 		movement_percent_along_path = 0;
 		movement_next_direction_check = 0;
 		movement_speed_modifier = 1;
@@ -314,11 +317,31 @@ function Character() constructor
 		
 		movement_speed_on_path = walk_speed / path_get_length(movement_path);
 		
-		if (_blocking == age.block)
+		if (_blocking)
 		{
 			blocked = true;
 			yield_manager = new TXR_Yield_Manager(txr_thread_current, true);
 		}
+	}
+		
+	static stop_moving = function()
+	{
+		if (walking)
+		{
+			image_index = 0;
+			image_speed = 0;
+		}
+	
+		if (path_exists(movement_path))
+		{
+			path_delete(movement_path);
+			movement_path = noone;
+		}
+		
+		if (solid) o_age_main.walkarea_manager.update_mp_grid(); //occupy the new position of the character in the mp_grid
+		
+		walking = false;
+		moving = false;
 	}
 	
 	static add_inventory = function(_item, _quantity=1, _at_index=-1)
@@ -557,5 +580,18 @@ function Character() constructor
 	{
 		if (path_exists(movement_path))
 			path_delete(movement_path);
+	}
+}
+
+function Character_Manager() constructor
+{
+	o = o_age_main;
+	
+	static __step = function()
+	{
+	}
+	
+	static __cleanup = function()
+	{
 	}
 }

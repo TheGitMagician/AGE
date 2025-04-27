@@ -85,7 +85,6 @@
     {"id":{"name":"age_macros","path":"scripts/age_macros/age_macros.yy",},},
     {"id":{"name":"age_object_runtime_functions","path":"scripts/age_object_runtime_functions/age_object_runtime_functions.yy",},},
     {"id":{"name":"age_object_structs","path":"scripts/age_object_structs/age_object_structs.yy",},},
-    {"id":{"name":"age_pathfinder_structs","path":"scripts/age_pathfinder_structs/age_pathfinder_structs.yy",},},
     {"id":{"name":"age_walkarea_structs","path":"scripts/age_walkarea_structs/age_walkarea_structs.yy",},},
     {"id":{"name":"dialog_functions","path":"scripts/dialog_functions/dialog_functions.yy",},},
     {"id":{"name":"func_hotspot","path":"scripts/func_hotspot/func_hotspot.yy",},},

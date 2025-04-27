@@ -18,7 +18,7 @@ function update_character_move()
 		image_index = 0;
 		image_speed = 0;
 		
-		o_age_main.pathfinder.update_mp_grid(o_age_main.walkarea_manager);
+		if (solid) o_age_main.walkarea_manager.update_mp_grid(); //occupy the new position of the character in the mp_grid
 		
 		if (blocked)
 		{

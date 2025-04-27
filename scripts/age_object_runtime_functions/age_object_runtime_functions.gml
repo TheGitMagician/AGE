@@ -5,7 +5,7 @@ function update_object_move()
 	if (!moving) return; //@TODO this check is redundant currently because it is also done in o_age_main's Step Event
 	
 	movement_percent_along_path += movement_speed_on_path * movement_speed_modifier;
-	//show_debug_message(y);
+	
 	if (movement_percent_along_path >= 1)
 	{
 		moving = false;

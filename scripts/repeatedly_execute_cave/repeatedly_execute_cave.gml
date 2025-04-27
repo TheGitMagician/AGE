@@ -4,11 +4,11 @@ function repeatedly_execute_cave(){
 		{
 			if (oHat.y > 60)
 			{
-				oHat.move(oHat.x,32,false);
+				oHat.move(oHat.x,32,eNoBlock,eAnywhere);
 			}
 			else
 			{
-				oHat.move(oHat.x,64,false);
+				oHat.move(oHat.x,64,eNoBlock,eAnywhere);
 			}
 		}
 		';

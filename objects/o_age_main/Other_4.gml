@@ -2,17 +2,14 @@
 if (!asset_has_tags(room, "AGE", asset_room))
 	exit
 
-//hide walkareas
+//hide Room Layer for walkareas
 layer_set_visible("Walkareas",false);
 
 //load walkarea mask for this room
-//the order is important - first create the walkareas then let the pathfinder create its mp_grid
-
 walkarea_manager.room_start();
-pathfinder.room_start(walkarea_manager);
 
 //load repeatedly execute scripts for this room
-//load_room_threads();
+load_room_threads();
 
 //check if we are in a cutscene which is skipped
 if (continue_skipping_cutscene_after_room_change)

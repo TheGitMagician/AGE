@@ -4,11 +4,11 @@ function repeatedly_execute_always_cave(){
 		{
 			if (oHatMoveAlways.y > 60)
 			{
-				oHatMoveAlways.move(oHatMoveAlways.x,32,false);
+				oHatMoveAlways.move(oHatMoveAlways.x,32,eNoBlock,eAnywhere);
 			}
 			else
 			{
-				oHatMoveAlways.move(oHatMoveAlways.x,64,false);
+				oHatMoveAlways.move(oHatMoveAlways.x,64,eNoBlock,eAnywhere);
 			}
 		}
 		';

@@ -32,7 +32,6 @@
     {"name":"age_global_runtime_functions","order":1,"path":"scripts/age_global_runtime_functions/age_global_runtime_functions.yy",},
     {"name":"age_macros","order":1,"path":"scripts/age_macros/age_macros.yy",},
     {"name":"age_object_runtime_functions","order":1,"path":"scripts/age_object_runtime_functions/age_object_runtime_functions.yy",},
-    {"name":"age_pathfinder_structs","order":1,"path":"scripts/age_pathfinder_structs/age_pathfinder_structs.yy",},
     {"name":"func_hotspot","order":2,"path":"scripts/func_hotspot/func_hotspot.yy",},
     {"name":"repeatedly_execute_always_cave","order":5,"path":"scripts/repeatedly_execute_always_cave/repeatedly_execute_always_cave.yy",},
     {"name":"repeatedly_execute_cave","order":4,"path":"scripts/repeatedly_execute_cave/repeatedly_execute_cave.yy",},

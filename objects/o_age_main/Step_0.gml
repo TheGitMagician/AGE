@@ -109,7 +109,6 @@ for (i=0; i<n; i++)
 	obj = objects[i];
 	
 	if ((obj.in_room != room) || (obj.enabled == false)) continue;
-	//show_debug_message(char.name)
 	
 	//@TOOD: we're checking obj.moving here but in update_object_move() there is another check. Only one is needed. Perhaps this one here is better.
 	//same also with the other checks

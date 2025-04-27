@@ -24,12 +24,13 @@ txr_constant_add("eForward", age.forward);
 txr_constant_add("eBackward", age.backward);
 txr_constant_add("eOnce", age.once);
 txr_constant_add("eRepeat", age.loop);
-txr_constant_add("eBlock", age.block);
-txr_constant_add("eNoBlock", age.no_block);
+txr_constant_add("eBlock", true);
+txr_constant_add("eNoBlock", false);
 txr_constant_add("eOptionOn", age.option_on);
 txr_constant_add("eOptionOff", age.option_off);
 txr_constant_add("eOptionOffForNow", age.option_off_for_now);
 txr_constant_add("eOptionOffForever", age.option_off_forever);
+txr_constant_add("eAnywhere", true);
 
 //add AGE functions to TXR parser
 txr_function_add("wait",txr_wait,1);

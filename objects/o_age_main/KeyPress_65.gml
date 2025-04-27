@@ -4,8 +4,6 @@
 
 //show_message(json_stringify(cIndi.inventory_items,true));
 
-//walkarea_manager.update_walkarea_mask();
-
 txr_run(@'
 	//save_game(0);
 	cIndi.say("My very long test sentence is spoken now.");

@@ -3,7 +3,7 @@ if (!asset_has_tags(room, "AGE", asset_room))
 	exit
 
 
-//mp_grid_draw(o_age_main.pathfinder.mp_grid);
+//mp_grid_draw(o_age_main.walkarea_manager.mp_grid);
 
 
 var i,n;
