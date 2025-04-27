@@ -57,131 +57,13 @@ function initialize_variables()
 
 function initialize_game_managers()
 {
-	//load global manager
 	global_manager = new Global_Manager();
-
-	//load all dialogs into memory
+	character = new Character_Manager();
+	object = new Object_Manager();
+	inventory = new Inventory_Manager();
 	dialog = new Dialog_Manager();
-	dialog.load_file("dialogs.txt");
 
-	//load walkarea manager
 	walkarea_manager = new Walkarea_Manager();
-	show_walkareas = false; //@DEBUG!!! also delete the other occurances
-}
-
-function create_character(_script_name, _settings_struct)
-{
-	if (variable_instance_exists(self,_script_name))
-	{ show_debug_message("AGE: Can't create character `"+_script_name+"` because the script name already exists.");
-		return; }
-		
-	var char = new Character();
-	
-	variable_instance_set(self,_script_name,char); //add character's script name to instance variables so that it can be accessed by TXR
-	array_push(characters, char); //add character reference to characters array so that it can be processed in other events
-	
-	char.script_name = _script_name;
-	
-	//apply settings to the character
-	var i,s;
-	s = variable_struct_get_names(_settings_struct);
-	for (i=0; i<array_length(s); i++)
-	{
-		switch (s[i])
-		{
-			case "starting_room":
-				char.current_room = _settings_struct.starting_room;
-				break;
-			case "x":
-				char.x = _settings_struct.x;
-				break;
-			case "y":
-				char.y = _settings_struct.y;
-				break;
-			case "name":
-				char.name = _settings_struct.name;
-				break;
-			case "walking_costume":
-				char.set_walking_costume(_settings_struct.walking_costume);
-				break;
-			case "speech_color":
-				char.speech_color = _settings_struct.speech_color;
-				break;
-			case "is_player_character":
-				char.is_the_player = _settings_struct.is_player_character;
-				o_age_main.player = char;
-				break;
-		}
-	}
-}
-
-function create_inventory_item(_script_name, _settings_struct)
-{
-	if (variable_instance_exists(self,_script_name))
-	{ show_debug_message("AGE: Can't create inventory item `"+_script_name+"` because the script name already exists.");
-		return; }
-		
-	var inv_item = new Inventory_Item();
-	
-	variable_instance_set(self,_script_name,inv_item); //add item's script name to instance variables so that it can be accessed by TXR
-	array_push(inventory_items, inv_item); //add item reference to inventory_items array so that it can be processed in other events
-	
-	inv_item.script_name = _script_name;
-	
-	//apply settings to the inventory_item
-	var i,s;
-	s = variable_struct_get_names(_settings_struct);
-	for (i=0; i<array_length(s); i++)
-	{
-		switch (s[i])
-		{
-			case "name":
-				inv_item.name = _settings_struct.name;
-				break;
-			case "sprite":
-				inv_item.sprite = _settings_struct.sprite;
-				break;
-		}
-	}
-}
-
-function create_object(_script_name, _settings_struct)
-{
-	if (variable_instance_exists(self,_script_name))
-	{ show_debug_message("AGE: Can't create object `"+_script_name+"` because the script name already exists.");
-		return; }
-	
-	var obj = new Object();
-	
-	variable_instance_set(self,_script_name,obj); //add object's script name to instance variables so that it can be accessed by TXR
-	array_push(objects, obj); //add oject reference to objects array so that it can be processed in other events
-	
-	obj.script_name = _script_name;
-	
-	//apply settings to the object
-	var i,s;
-	s = variable_struct_get_names(_settings_struct);
-	for (i=0; i<array_length(s); i++)
-	{
-		switch (s[i])
-		{
-			case "in_room":
-				obj.in_room = _settings_struct.in_room;
-				break;
-			case "x":
-				obj.x = _settings_struct.x;
-				break;
-			case "y":
-				obj.y = _settings_struct.y;
-				break;
-			case "name":
-				obj.name = _settings_struct.name;
-				break;
-			case "sprite":
-				obj.sprite_index = _settings_struct.sprite;
-				break;
-		}
-	}
 }
 
 function fast_forward()
@@ -194,7 +76,7 @@ function fast_forward()
 
 function unload_game()
 {
-	//since the game manager like Dialog_Manager don't hold any data on their own, they don't have to be re-initialized when the game is unloaded
+	//since the game managers like Dialog_Manager don't hold any data on their own, they don't have to be re-initialized when the game is unloaded
 	//only the variables have to be reset - which also means that all characters/inventory items/dialogs, etc. will be unloaded
 	//since they are stored in the arrays in this object (like characters[])
 	unload_room_threads();

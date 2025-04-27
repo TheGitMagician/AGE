@@ -29,7 +29,6 @@
     {"name":"rm_outside","order":1,"path":"rooms/rm_outside/rm_outside.yy",},
     {"name":"age_character_runtime_functions","order":1,"path":"scripts/age_character_runtime_functions/age_character_runtime_functions.yy",},
     {"name":"age_character_script_functions","order":2,"path":"scripts/age_character_script_functions/age_character_script_functions.yy",},
-    {"name":"age_global_runtime_functions","order":1,"path":"scripts/age_global_runtime_functions/age_global_runtime_functions.yy",},
     {"name":"age_macros","order":1,"path":"scripts/age_macros/age_macros.yy",},
     {"name":"age_object_runtime_functions","order":1,"path":"scripts/age_object_runtime_functions/age_object_runtime_functions.yy",},
     {"name":"func_hotspot","order":2,"path":"scripts/func_hotspot/func_hotspot.yy",},

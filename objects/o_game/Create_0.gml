@@ -1,5 +1,5 @@
 // ------- Characters -------
-o_age_main.create_character("cIndi", {
+o_age_main.character.create("cIndi", {
 	starting_room: rm_cave,
 	x: 150,
 	y: 120,
@@ -8,7 +8,7 @@ o_age_main.create_character("cIndi", {
 	is_player_character: true
 });
 
-o_age_main.create_character("cSophia", {
+o_age_main.character.create("cSophia", {
 	starting_room: rm_cave,
 	x: 115,
 	y: 130,
@@ -19,7 +19,7 @@ o_age_main.create_character("cSophia", {
 
 
 // ------- Objects -------
-o_age_main.create_object("oHat", {
+o_age_main.object.create("oHat", {
 	in_room: rm_cave,
 	x: 192,
 	y: 64,
@@ -27,7 +27,7 @@ o_age_main.create_object("oHat", {
 	sprite: s_hat
 });
 
-o_age_main.create_object("oHatMoveAlways", {
+o_age_main.object.create("oHatMoveAlways", {
 	in_room: rm_cave,
 	x: 224,
 	y: 64,
@@ -37,17 +37,21 @@ o_age_main.create_object("oHatMoveAlways", {
 
 
 // ------- Inventory Items -------
-o_age_main.create_inventory_item("iKey", {
+o_age_main.inventory.create("iKey", {
 	name: "Key",
 	sprite: noone
 });
 
-o_age_main.create_inventory_item("iCoin", {
+o_age_main.inventory.create("iCoin", {
 	name: "Coin",
 	sprite: noone
 });
 
-o_age_main.create_inventory_item("iMap", {
+o_age_main.inventory.create("iMap", {
 	name: "Map",
 	sprite: noone
 });
+
+
+// ------- Dialogs -------
+o_age_main.dialog.load_file("dialogs.txt");

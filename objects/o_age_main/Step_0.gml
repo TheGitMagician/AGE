@@ -74,48 +74,10 @@ if (thread_room_repeatedly_execute_always != undefined)
 #endregion
 
 
-// ================ process global functions ================
-with (global_manager) update_global_manager();
-
-// ================ process characters ================
-#region process characters
-n = array_length(characters);
-for (i=0; i<n; i++)
-{
-	char = characters[i];
-	
-	if ((char.current_room != room) || (char.enabled == false)) continue;
-	//show_debug_message(char.name)
-	
-	//@TOOD: we're checking char.walking here but in update_character_move() there is another check. Only one is needed. Perhaps this one here is better.
-	//same also with the other checks
-	if (char.walking)
-		with (char) update_character_move();
-	
-	if (char.animating)
-		with (char) update_character_animation();
-	
-	if (char.talking)
-		with (char) update_character_say();
-}
-#endregion
-
-
-// ================ process objects ================
-#region process objects
-n = array_length(objects);
-for (i=0; i<n; i++)
-{
-	obj = objects[i];
-	
-	if ((obj.in_room != room) || (obj.enabled == false)) continue;
-	
-	//@TOOD: we're checking obj.moving here but in update_object_move() there is another check. Only one is needed. Perhaps this one here is better.
-	//same also with the other checks
-	if (obj.moving)
-		with (obj) update_object_move();
-}
-#endregion
+// ================ update game managers ================
+global_manager.__step();
+character.__step();
+object.__step();
 
 
 // ================ process dialog options ================

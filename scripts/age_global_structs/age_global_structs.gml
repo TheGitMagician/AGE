@@ -18,5 +18,28 @@ function Global_Manager() constructor
 		blocked = true;
 		yield_manager = new TXR_Yield_Manager(txr_thread_current,true);
 	}
-
+	
+	static __step = function()
+	{
+		if (waiting)
+		{
+			wait_steps --;
+		
+			if (wait_steps <= 0)
+			{
+				waiting = false;
+				wait_steps = 0;
+			
+				if (blocked)
+				{
+					blocked = false;
+					yield_manager.continue_thread();
+				}
+			}
+		}
+	}
+	
+	static __cleanup = function()
+	{
+	}
 }

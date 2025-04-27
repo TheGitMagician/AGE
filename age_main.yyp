@@ -78,7 +78,6 @@
     {"id":{"name":"age_character_script_functions","path":"scripts/age_character_script_functions/age_character_script_functions.yy",},},
     {"id":{"name":"age_character_structs","path":"scripts/age_character_structs/age_character_structs.yy",},},
     {"id":{"name":"age_dialog_structs","path":"scripts/age_dialog_structs/age_dialog_structs.yy",},},
-    {"id":{"name":"age_global_runtime_functions","path":"scripts/age_global_runtime_functions/age_global_runtime_functions.yy",},},
     {"id":{"name":"age_global_structs","path":"scripts/age_global_structs/age_global_structs.yy",},},
     {"id":{"name":"age_helper_functions","path":"scripts/age_helper_functions/age_helper_functions.yy",},},
     {"id":{"name":"age_inventory_structs","path":"scripts/age_inventory_structs/age_inventory_structs.yy",},},

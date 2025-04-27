@@ -98,3 +98,77 @@ function Object() constructor
 			path_delete(movement_path);
 	}
 }
+
+function Object_Manager() constructor
+{
+	//the actual object structs are stored in o_age_main's objects[] array.
+	//yes, this is not nicely decoupled - they could be stored in here, but it has some benefits if they are stored centrally
+	//so it is important that this manager knows the central object (o_age_main) and can refer to it when it accesses the objects
+	o = o_age_main;
+	
+	static create = function(_script_name,_settings_struct)
+	{
+		if (variable_instance_exists(o,_script_name))
+		{ show_debug_message("AGE: Can't create object `"+_script_name+"` because the script name already exists.");
+			return; }
+	
+		var obj = new Object();
+	
+		variable_instance_set(o,_script_name,obj); //add object's script name to o_age_main's variables so that it can be accessed by TXR
+		array_push(o.objects, obj); //add oject reference to o_age_main's objects array so that it can be accessed by other resources
+	
+		obj.script_name = _script_name;
+	
+		//apply settings to the object
+		var i,s;
+		s = variable_struct_get_names(_settings_struct);
+		for (i=0; i<array_length(s); i++)
+		{
+			switch (s[i])
+			{
+				case "in_room":
+					obj.in_room = _settings_struct.in_room;
+					break;
+				case "x":
+					obj.x = _settings_struct.x;
+					break;
+				case "y":
+					obj.y = _settings_struct.y;
+					break;
+				case "name":
+					obj.name = _settings_struct.name;
+					break;
+				case "sprite":
+					obj.sprite_index = _settings_struct.sprite;
+					break;
+			}
+		}
+	}
+	
+	static __step = function()
+	{
+		var i,n,obj;
+		n = array_length(o.objects);
+		for (i=0; i<n; i++)
+		{
+			obj = o.objects[i];
+	
+			if ((obj.in_room != room) || (obj.enabled == false)) continue;
+	
+			//@TOOD: we're checking obj.moving here but in update_object_move() there is another check. Only one is needed. Perhaps this one here is better.
+			//same also with the other checks
+			if (obj.moving)
+				with (obj) update_object_move();
+		}
+	}
+	
+	static __cleanup = function()
+	{
+		var i,n;
+		n = array_length(o.objects);
+		for (i=0; i<n; i++)
+		{
+			o.objects[i].__cleanup();
+		}
+	}
+}

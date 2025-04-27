@@ -585,13 +585,87 @@ function Character() constructor
 
 function Character_Manager() constructor
 {
+	//the actual character structs are stored in o_age_main's characters[] array.
+	//yes, this is not nicely decoupled - they could be stored in here, but it has some benefits if they are stored centrally
+	//so it is important that this manager knows the central object (o_age_main) and can refer to it when it accesses the characters
 	o = o_age_main;
+	
+	static create = function(_script_name, _settings_struct)
+	{
+		if (variable_instance_exists(o,_script_name))
+		{ show_debug_message("AGE: Can't create character `"+_script_name+"` because the script name already exists.");
+			return; }
+		
+		var char = new Character();
+	
+		variable_instance_set(o,_script_name,char); //add character's script name to o_age_main's variables so that it can be accessed by TXR
+		array_push(o.characters, char); //add character reference to o_age_main's characters array so that it can be accessed by other resources
+	
+		char.script_name = _script_name;
+	
+		//apply settings to the character
+		var i,s;
+		s = variable_struct_get_names(_settings_struct);
+		for (i=0; i<array_length(s); i++)
+		{
+			switch (s[i])
+			{
+				case "starting_room":
+					char.current_room = _settings_struct.starting_room;
+					break;
+				case "x":
+					char.x = _settings_struct.x;
+					break;
+				case "y":
+					char.y = _settings_struct.y;
+					break;
+				case "name":
+					char.name = _settings_struct.name;
+					break;
+				case "walking_costume":
+					char.set_walking_costume(_settings_struct.walking_costume);
+					break;
+				case "speech_color":
+					char.speech_color = _settings_struct.speech_color;
+					break;
+				case "is_player_character":
+					char.is_the_player = _settings_struct.is_player_character;
+					o.player = char;
+					break;
+			}
+		}
+	}
 	
 	static __step = function()
 	{
+		var i,n,char;
+		n = array_length(o.characters);
+		for (i=0; i<n; i++)
+		{
+			char = o.characters[i];
+	
+			if ((char.current_room != room) || (char.enabled == false)) continue;
+	
+			//@TOOD: we're checking char.walking here but in update_character_move() there is another check. Only one is needed. Perhaps this one here is better.
+			//same also with the other checks
+			if (char.walking)
+				with (char) update_character_move();
+	
+			if (char.animating)
+				with (char) update_character_animation();
+	
+			if (char.talking)
+				with (char) update_character_say();
+		}
 	}
 	
 	static __cleanup = function()
 	{
+		var i,n;
+		n = array_length(o.characters);
+		for (i=0; i<n; i++)
+		{
+			o.characters[i].__cleanup();
+		}
 	}
 }

@@ -13,7 +13,7 @@ function Textblock(_char,_text,_x=undefined,_y=undefined,_duration) constructor
 	duration = _duration;
 	color = _char.speech_color;
 	
-	static update = function()
+	static __step = function()
 	{
 		duration --;
 		
@@ -24,7 +24,7 @@ function Textblock(_char,_text,_x=undefined,_y=undefined,_duration) constructor
 		}
 	}
 	
-	static draw = function()
+	static __draw_gui = function()
 	{
 		var xx,yy,margin,max_width;
 		

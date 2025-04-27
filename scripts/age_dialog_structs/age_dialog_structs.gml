@@ -145,6 +145,11 @@ function Dialog(_dialog_manager) constructor
 
 function Dialog_Manager() constructor
 {
+	//the actual inventory item structs are stored in o_age_main's dialogs[] array.
+	//yes, this is not nicely decoupled - they could be stored in here, but it has some benefits if they are stored centrally
+	//so it is important that this manager knows the central object (o_age_main) and can refer to it when it accesses the dialogs
+	o = o_age_main;
+	
 	//remember to reset these variables in the stop() method
 	current_dialog = undefined; //pointer to the current dialog struct
 	previous_dialog = undefined; //pointer to the previous dialog struct (if a dialog is currently running)
@@ -166,7 +171,7 @@ function Dialog_Manager() constructor
 		//@TODO: should the function store the parsed dialogs locally until the parsing is finished and only then
 		//transfer them to o_age_main? Right now, if a parse error happens, all the dialogs that have been parsed
 		//already are stored in o_age_main and the other ones aren't.
-		var buffer,lines,line,i,current_dialog=undefined,current_option_id=-1,current_script,o,n,tt=[];
+		var buffer,lines,line,i,current_dialog=undefined,current_option_id=-1,current_script,opt,n,tt=[];
 		
 		//load file
 		buffer = buffer_load(working_directory + _filename);	
@@ -209,12 +214,12 @@ function Dialog_Manager() constructor
 				}
 				
 				// -------- this is where a finished dialog is transferred into the game ----------
-				//create an instance variable for the finished struct of the *previous* dialog so that it can be accessed by TXR scripts
-				//and add it to the dialog array
+				//create an instance variable for the finished struct of the *previous* dialog in o_age_main so that it can be accessed by TXR scripts
+				//and add it to o_age_main's dialogs array so that it can be accessed by other resources
 				if (current_dialog != undefined)
 				{
-					variable_instance_set(o_age_main,current_dialog.script_name,current_dialog);
-					array_push(o_age_main.dialogs,current_dialog);
+					variable_instance_set(o,current_dialog.script_name,current_dialog);
+					array_push(o.dialogs,current_dialog);
 				}
 				
 				//then start a new dialog struct
@@ -226,7 +231,7 @@ function Dialog_Manager() constructor
 			//new dialog option (or opening text)
 			else if (string_starts_with(line,"@"))
 			{
-				o = string_char_at(line,2);
+				opt = string_char_at(line,2);
 				
 				//we have hit the start of a new option, so...					
 				//store the finished script that has been created for the *previous* option
@@ -237,13 +242,13 @@ function Dialog_Manager() constructor
 				}
 								
 				//then start a new option and script				
-				if (o == "S") //line starts with @S
+				if (opt == "S") //line starts with @S
 				{
 					current_option_id = 0; //0 stands for the opening script that is run before the options are displayed
 				}
 				else //line starts with @1, @2, ...
 				{
-					current_option_id = real(o);
+					current_option_id = real(opt);
 					
 					//set option description
 					tt = string_split_ext(line,[" ","\t"],true,1);
@@ -477,16 +482,20 @@ function Dialog_Manager() constructor
 		else return false;
 	}
 	
-	static get_id_by_name = function(_script_name)
+	static get_struct_by_name = function(_script_name)
 	{
-		if (variable_instance_exists(o_age_main,_script_name))
-		{
-			if (is_instanceof(variable_instance_get(o_age_main, _script_name), Dialog))
-				return variable_instance_get(o_age_main,_script_name);
-			else
-				return undefined;
-		}
+		if (!variable_instance_exists(o,_script_name))
+			return undefined;
+		
+		var v = variable_instance_get(o, _script_name);
+		
+		if (is_instanceof(v, Dialog))
+			return v;
 		else
 			return undefined;
+	}
+	
+	static __cleanup = function()
+	{
 	}
 }
