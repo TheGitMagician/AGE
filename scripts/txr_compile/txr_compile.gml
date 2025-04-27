@@ -19,7 +19,7 @@ function txr_compile(argument0) {
 		var i = array_length(lbs);
 		while (--i >= 1) {
 			lb = lbs[i];
-			lb[@2] = lbs[0];
+			lb[2] = lbs[0];
 		}
 		k = ds_map_find_next(lbm, k);
 	}

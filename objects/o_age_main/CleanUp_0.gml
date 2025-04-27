@@ -2,4 +2,3 @@
 unload_room_threads();
 
 //cleanup all characters
-with (

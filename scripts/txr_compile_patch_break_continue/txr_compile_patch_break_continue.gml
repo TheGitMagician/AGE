@@ -11,8 +11,8 @@ function txr_compile_patch_break_continue(argument0, argument1, argument2, argum
 	for (var i = start; i < till; i++) {
 		var act = out[|i];
 		if (act[0] == txr_action.jump) switch (act[2]) {
-			case -10: if (_break >= 0) act[@2] = _break; break;
-			case -11: if (_continue >= 0) act[@2] = _continue; break;
+			case -10: if (_break >= 0) act[2] = _break; break;
+			case -11: if (_continue >= 0) act[2] = _continue; break;
 		}
 	}
 }

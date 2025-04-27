@@ -9,9 +9,9 @@ function txr_thread_jump(th/*:txr_thread*/, label) {
 	repeat (array_length(arr)) {
 		var act = arr[++pos];
 		if (act[0] == txr_action.label && act[2] == label) {
-			th[@txr_thread.pos] = pos;
+			th[txr_thread.pos] = pos;
 			if (th[txr_thread.status] == txr_thread_status.running) {
-				th[@txr_thread.status] = txr_thread_status.jump;
+				th[txr_thread.status] = txr_thread_status.jump;
 			}
 			return true;
 		}

@@ -40,8 +40,8 @@ function txr_build_stat() {
 					var nodes = [], found = 0;
 					if (tkn[0] == txr_token._option) {// option <value>: ...statements
 						if (txr_build_expr(0)) return true;
-						_args[@_argc++] = txr_build_node;
-						_opts[@_optc++] = [txr_node.block, tk[1], nodes];
+						_args[_argc++] = txr_build_node;
+						_opts[_optc++] = [txr_node.block, tk[1], nodes];
 					} else { // default: ...statements
 						_default = [txr_node.block, tk[1], nodes];
 					}
@@ -56,7 +56,7 @@ function txr_build_stat() {
 							|| tkn[0] == txr_token._default
 						) break;
 						if (txr_build_stat()) return true;
-						nodes[@found++] = txr_build_node;
+						nodes[found++] = txr_build_node;
 					}
 				} else return txr_throw_at("Expected an `option` or `}`", tkn);
 			}
@@ -83,8 +83,8 @@ function txr_build_stat() {
 					var nodes = [], found = 0;
 					if (tkn[0] == txr_token._case) {// case <value>: ...statements
 						if (txr_build_expr(0)) return true;
-						_args[@_optc] = txr_build_node;
-						_opts[@_optc++] = [txr_node.block, tk[1], nodes];
+						_args[_optc] = txr_build_node;
+						_opts[_optc++] = [txr_node.block, tk[1], nodes];
 					} else { // default: ...statements
 						_default = [txr_node.block, tk[1], nodes];
 					}
@@ -99,7 +99,7 @@ function txr_build_stat() {
 							|| tkn[0] == txr_token._default
 						) break;
 						if (txr_build_stat()) return true;
-						nodes[@found++] = txr_build_node;
+						nodes[found++] = txr_build_node;
 					}
 				} else return txr_throw_at("Expected an `option` or `}`", tkn);
 			}
@@ -116,7 +116,7 @@ function txr_build_stat() {
 					break;
 				}
 				if (txr_build_stat()) return true;
-				nodes[@found++] = txr_build_node;
+				nodes[found++] = txr_build_node;
 			}
 			if (!closed) return txr_throw_at("Unclosed {} starting", tk);
 			txr_build_node = [txr_node.block, tk[1], nodes];
@@ -223,7 +223,7 @@ function txr_build_stat() {
 			var _expr = txr_build_node;
 			switch (_expr[0]) {
 				case txr_node.prefix: case txr_node.postfix:
-					_expr[@1] = txr_node.adjfix;
+					_expr[1] = txr_node.adjfix;
 					break;
 				case txr_node.call:
 				case txr_node.value_call:

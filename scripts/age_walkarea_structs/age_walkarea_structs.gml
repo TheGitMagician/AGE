@@ -159,7 +159,7 @@ function Walkarea_Manager() constructor
 		iid.sprite_index = walkarea_sprite;
 		
 		mp_grid_add_instances(mp_grid,o_walkarea_helper,true);
-		
+		//mp_grid_add_rectangle(mp_grid,0,0,200,200);
 		instance_destroy(iid);
 		
 		//go through all solid characters and objects in the room and add their blocking box to the mask
@@ -231,9 +231,11 @@ function Walkarea_Manager() constructor
 		if (!surface_exists(walkarea_mask))
 			return;
 		
-		draw_set_alpha(0.5);
-		draw_surface(walkarea_mask,0,0);
-		draw_set_alpha(1);
+		//draw_set_alpha(0.5);
+		//draw_surface(walkarea_mask,0,0);
+		//draw_set_alpha(1);
+		
+		draw_sprite(walkarea_sprite,0,0,0);
 	}
 	
 	static __room_start = function()

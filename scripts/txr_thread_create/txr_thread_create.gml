@@ -3,15 +3,15 @@
 /// @returns {txr_thread}
 function txr_thread_create(arr, argd=undefined, type=txr_thread_type.standard) {
 	var th/*:txr_thread*/ = array_create(txr_thread.sizeof);
-	th[@txr_thread.actions] = arr;
-	th[@txr_thread.pos] = 0;
-	th[@txr_thread.stack] = ds_stack_create();
-	th[@txr_thread.jumpstack] = ds_stack_create();
-	th[@txr_thread.locals] = {};
-	th[@txr_thread.result] = undefined;
-	th[@txr_thread.status] = txr_thread_status.running;
-	th[@txr_thread.scope] = o_age_main; //originally was self.id; - TXR uses this scope to check for variables/functions via txr_thread_resume() -> txr_action.ident
-	th[@txr_thread.type] = type; //stores the AGE specific type of the thread (e.g. txr_thread_type.rep_exec, or txr_thread_type.dialog)
+	th[txr_thread.actions] = arr;
+	th[txr_thread.pos] = 0;
+	th[txr_thread.stack] = ds_stack_create();
+	th[txr_thread.jumpstack] = ds_stack_create();
+	th[txr_thread.locals] = {};
+	th[txr_thread.result] = undefined;
+	th[txr_thread.status] = txr_thread_status.running;
+	th[txr_thread.scope] = o_age_main; //originally was self.id; - TXR uses this scope to check for variables/functions via txr_thread_resume() -> txr_action.ident
+	th[txr_thread.type] = type; //stores the AGE specific type of the thread (e.g. txr_thread_type.rep_exec, or txr_thread_type.dialog)
 	if (argd != undefined) txr_thread_set_args(th, argd);
 	//@DEBUG
 	o_age_main.threads ++;

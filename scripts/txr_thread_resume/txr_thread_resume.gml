@@ -16,13 +16,13 @@ function txr_thread_resume(th/*:txr_thread*/, val = undefined) {
 			ds_stack_push(stack, val);
 			break;
 	}
-	th[@txr_thread.result] = val;
+	th[txr_thread.result] = val;
 	var pos = th[txr_thread.pos];
 	var len = array_length(arr);
 	var locals = th[txr_thread.locals];
 	var q = undefined; 
 	var halt = undefined;
-	th[@txr_thread.status] = txr_thread_status.running;
+	th[txr_thread.status] = txr_thread_status.running;
 	while (pos < len) {
 		if (halt == txr_thread_status.jump) {
 			halt = undefined;
@@ -93,14 +93,14 @@ function txr_thread_resume(th/*:txr_thread*/, val = undefined) {
 					halt = "Struct or variable `" + q[2] + "` not found. Cannot get it.";
 					continue;
 				}
-				ds_stack_push(stack, th[@txr_thread.scope][$ q[2]]); //was originally: ds_stack_push(stack, self[$ q[2]]);
+				ds_stack_push(stack, th[txr_thread.scope][$ q[2]]); //was originally: ds_stack_push(stack, self[$ q[2]]);
 				break;
 			case txr_action.set_ident:
-				if (th[@txr_thread.scope][$ q[2]] == undefined) {
+				if (th[txr_thread.scope][$ q[2]] == undefined) {
 					halt = "Struct or variable `" + q[2] + "` not found. Cannot set it.";
 					continue;
 				}
-				th[@txr_thread.scope][$ q[2]] = ds_stack_pop(stack); //was originally: self[$ q[2]] = ds_stack_pop(stack);
+				th[txr_thread.scope][$ q[2]] = ds_stack_pop(stack); //was originally: self[$ q[2]] = ds_stack_pop(stack);
 				break;
 			case txr_action.get_field:
 				var v = ds_stack_pop(stack);
@@ -143,7 +143,7 @@ function txr_thread_resume(th/*:txr_thread*/, val = undefined) {
 					args[|i] = ds_stack_pop(stack);
 				}
 				txr_function_error = undefined;
-				th[@txr_thread.pos] = pos;
+				th[txr_thread.pos] = pos;
 				var fn = _is_value_call ? ds_stack_pop(stack) : q[2];
 				if (fn == undefined) {
 					halt = "The called function doesn't exist.";
@@ -180,7 +180,7 @@ function txr_thread_resume(th/*:txr_thread*/, val = undefined) {
 				if (th[txr_thread.status] != txr_thread_status.running) {
 					halt = th[txr_thread.status];
 					if (halt == txr_thread_status.jump) {
-						th[@txr_thread.status] = txr_thread_status.running;
+						th[txr_thread.status] = txr_thread_status.running;
 						ds_stack_push(stack, v);
 					}
 					continue;
@@ -253,7 +253,7 @@ function txr_thread_resume(th/*:txr_thread*/, val = undefined) {
 				if (is_array(a)) {
 					if (txr_is_number(i)) {
 						if (i >= 0 && i < 32000) {
-							a[@i] = v;
+							a[i] = v;
 						} else halt = txr_sfmt("Invalid index `%` for set", i);
 					} else halt = txr_sfmt("`%` (%) is not an index for set", i, typeof(i));
 				} else halt = txr_sfmt("`%` (%) is not an array for set", a, typeof(a));
@@ -279,15 +279,15 @@ function txr_thread_resume(th/*:txr_thread*/, val = undefined) {
 		}
 	}
 	if (halt == undefined) {
-		th[@txr_thread.status] = txr_thread_status.finished;
+		th[txr_thread.status] = txr_thread_status.finished;
 		if (ds_stack_empty(stack)) {
-			th[@txr_thread.result] = 0;
-		} else th[@txr_thread.result] = ds_stack_pop(stack);
+			th[txr_thread.result] = 0;
+		} else th[txr_thread.result] = ds_stack_pop(stack);
 	} else if (is_string(halt)) {
-		th[@txr_thread.status] = txr_thread_status.error;
-		th[@txr_thread.result] = "TXR Error: " + halt + " at " + txr_print_pos(q[1]);
+		th[txr_thread.status] = txr_thread_status.error;
+		th[txr_thread.result] = "TXR Error: " + halt + " at " + txr_print_pos(q[1]);
 	}
-	th[@txr_thread.pos] = pos;
+	th[txr_thread.pos] = pos;
 	txr_thread_current = _previous;
 	return th[txr_thread.status];
 }

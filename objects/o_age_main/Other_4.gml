@@ -6,7 +6,7 @@ if (!asset_has_tags(room, "AGE", asset_room))
 layer_set_visible("Walkareas",false);
 
 //load walkarea mask for this room
-walkarea_manager.room_start();
+walkarea_manager.__room_start();
 
 //load repeatedly execute scripts for this room
 load_room_threads();
