@@ -29,7 +29,11 @@ goto-dialog dTestBranch1
 //return
 
 @3 Goodbye.
-cIndi: I better get going.
+cIndi: I will continue my experiments outside.
+	wait(20);
+	cIndi.change_room(rm_outside);
+	wait(20);
+cIndi: Finally, some fresh air!
 //option-off-for-now 3
 stop
 

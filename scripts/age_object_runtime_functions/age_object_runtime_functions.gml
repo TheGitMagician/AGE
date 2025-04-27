@@ -8,13 +8,7 @@ function update_object_move()
 	
 	if (movement_percent_along_path >= 1)
 	{
-		moving = false;
-		
-		if (path_exists(movement_path))
-		{
-			path_delete(movement_path);
-			movement_path = noone;
-		}
+		stop_moving();
 		
 		if (blocked)
 		{

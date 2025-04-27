@@ -155,7 +155,7 @@ function Dialog_Manager() constructor
 	previous_dialog = undefined; //pointer to the previous dialog struct (if a dialog is currently running)
 	currently_executed_option = -1;
 	currently_active_txr_thread = undefined; //pointer to the TXR thread that stores the currently running dialog script	
-	options_are_displayed = false;
+	options_are_currently_displayed = false;
 	handing_over_from_other_dialog = false; //is true only when one running dialog hands over to another dialog (set in goto_dialog() - which can also be triggered from goto_previous())
 	room_at_dialog_start = noone; //tracks the room so that the dialog can be stopped if the room has been changed during the conversation
 	
@@ -372,7 +372,7 @@ function Dialog_Manager() constructor
 		}
 		
 		currently_executed_option = -1;
-		options_are_displayed = true;
+		options_are_currently_displayed = true;
 	}
 	
 	static goto_previous = function()
@@ -439,7 +439,7 @@ function Dialog_Manager() constructor
 		current_dialog = undefined;
 		previous_dialog = undefined;
 		currently_executed_option = -1;
-		options_are_displayed = false;
+		options_are_currently_displayed = false;
 		currently_active_txr_thread = undefined;
 		handing_over_from_other_dialog = false;
 		room_at_dialog_start = noone;
@@ -469,7 +469,7 @@ function Dialog_Manager() constructor
 		//run option
 		d.option_flags[_option_nr][__AGE_DLG_OPTN_FLG_WAS_CHOSEN] = true;
 		
-		options_are_displayed = false;
+		options_are_currently_displayed = false;
 		currently_executed_option = _option_nr;
 		
 		var th;
@@ -480,6 +480,11 @@ function Dialog_Manager() constructor
 			return true;
 		}
 		else return false;
+	}
+	
+	static options_are_displayed = function()
+	{
+		return options_are_currently_displayed;
 	}
 	
 	static get_struct_by_name = function(_script_name)

@@ -2,7 +2,7 @@
 if (!asset_has_tags(room, "AGE", asset_room))
 	exit
 
-var i,n,char,obj,th,result;
+var i,n,char,obj,result;
 
 mx = mouse_x;
 my = mouse_y;
@@ -12,64 +12,15 @@ my = mouse_y;
 //keep repeatedly_execute running
 if ((thread_room_repeatedly_execute != undefined) && (blocked == false))
 {
-	th = thread_room_repeatedly_execute;
-		
-	txr_thread_reset(th);
-		
-	//start the thread
-	var result = undefined;
-	switch (txr_thread_resume(th)) {
-		//the thread runs completely to the end without any blocking commands
-		//in that case it can be destroyed immediately - unless it is a rep_exec or rep_exec_always which get restarted every frame!
-		case txr_thread_status.finished:
-			txr_error = "";
-			result = th[txr_thread.result];
-			break;
-		//the thread ran into an error while trying to execute it
-		//the error message is shown and the thread destroyed
-		case txr_thread_status.error:
-			txr_error = th[txr_thread.result];
-			show_debug_message(txr_error);
-			txr_thread_destroy(th);
-			thread_room_repeatedly_execute = undefined;
-			break;
-		//the other option is that the thread yields (because of a blocking AGE function).
-		//in that case the thread is later resumed by TXR_Yield_Manager which also checks if it can be destroyed afterwards
-	}
+	txr_thread_reset(thread_room_repeatedly_execute);	
+	txr_age_thread_resume(thread_room_repeatedly_execute);
 }
 
 //keep repeatedly_execute_always running
 if (thread_room_repeatedly_execute_always != undefined)
 {
-	th = thread_room_repeatedly_execute_always;
-		
-		txr_thread_reset(th);
-		
-		//start the thread
-		var result = undefined;
-		switch (txr_thread_resume(th)) {
-			//the thread runs completely to the end without any blocking commands
-			//in that case it can be destroyed immediately - unless it is a rep_exec or rep_exec_always which get restarted every frame!
-			case txr_thread_status.finished:
-				txr_error = "";
-				result = th[txr_thread.result];
-				break;
-			//the thread ran into an error while trying to execute it
-			//the error message is shown and the thread destroyed
-			case txr_thread_status.error:
-				txr_error = th[txr_thread.result];
-				show_debug_message(txr_error);
-				txr_thread_destroy(th);
-				thread_room_repeatedly_execute_always = undefined;
-				break;
-			//the other option is that the thread yields (because of a blocking AGE function).
-			//THIS IS NOT ALLOWED IN REP_EXEC_ALWAYS so the thread will be destroyed and a warning will be shown
-			case txr_thread_status.yield:
-				show_debug_message("AGE: repeatedly_execute_always script was stopped because it contains a blocking function which is not allowed.");
-				txr_thread_destroy(th);
-				thread_room_repeatedly_execute_always = undefined;
-				break;
-		}
+	txr_thread_reset(thread_room_repeatedly_execute_always);
+	txr_age_thread_resume(thread_room_repeatedly_execute_always);
 }
 #endregion
 

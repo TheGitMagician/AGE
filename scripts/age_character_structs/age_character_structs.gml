@@ -12,6 +12,7 @@ function Character() constructor
 	
 	blocked = false;
 	yield_manager = undefined;
+	called_from_rep_exec_always = false;
 	
 	sprite_left = noone;
 	sprite_right = noone;	
@@ -146,6 +147,7 @@ function Character() constructor
 		animate_direction = _direction;
 		
 		animating = true;
+		__rep_exec_always_check();
 		
 		if (_blocking)
 		{
@@ -272,8 +274,11 @@ function Character() constructor
 		}
 		
 		talking = true;
+		__rep_exec_always_check();
+		
 		talk_duration_remaining = 20;
 		talk_current_line = text;
+		
 		
 		if (!o_age_main.skipping_cutscene)
 			talk_textblock = o_gui.create_textblock(self,text,x,y-sprite_get_height(sprite_index),talk_duration_remaining);
@@ -311,6 +316,7 @@ function Character() constructor
 		movement_speed_modifier = 1;
 		
 		walking = true;
+		__rep_exec_always_check();
 		
 		image_index = 1;
 		image_speed = walk_anim_speed;
@@ -550,6 +556,14 @@ function Character() constructor
 			}
 			room_goto(current_room);
 		}
+	}
+	
+	static __rep_exec_always_check = function()
+	{
+		//this method is only used in functions which have an ongoing effect (e.g. walking, moving, talking)
+		//this flag is then checked when the object is updated to make sure that the effect continues running even if the game is blocked
+		//if - and only if - the function was started from a rep_exec_always script
+		if (txr_thread_current[txr_thread.type] == txr_thread_type.rep_exec_always) called_from_rep_exec_always = true;
 	}
 	
 	static __serialize = function()

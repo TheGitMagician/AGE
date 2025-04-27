@@ -110,6 +110,7 @@
     {"id":{"name":"txr_action_read","path":"scripts/txr_action_read/txr_action_read.yy",},},
     {"id":{"name":"txr_action_write","path":"scripts/txr_action_write/txr_action_write.yy",},},
     {"id":{"name":"txr_age_functions_dialog","path":"scripts/txr_age_functions_dialog/txr_age_functions_dialog.yy",},},
+    {"id":{"name":"txr_age_functions_internal","path":"scripts/txr_age_functions_internal/txr_age_functions_internal.yy",},},
     {"id":{"name":"txr_age_functions_misc","path":"scripts/txr_age_functions_misc/txr_age_functions_misc.yy",},},
     {"id":{"name":"txr_build_expr","path":"scripts/txr_build_expr/txr_build_expr.yy",},},
     {"id":{"name":"txr_build_loop_body","path":"scripts/txr_build_loop_body/txr_build_loop_body.yy",},},

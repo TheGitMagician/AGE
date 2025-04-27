@@ -40,9 +40,10 @@ function cave_doorway_look_at()
 function cave_skeleton_look_at()
 {
 	txr_run(@'
-		//cIndi.face_direction(AGE_DIR_RIGHT);
-		//wait(30);
-		//cIndi.say("These guys have seen better days.");
+		//cIndi.walk(150,150,eBlock);
+		cIndi.face_direction(eDirRight);
+		wait(30);
+		cIndi.say("These guys have seen better days.");
 		//cIndi.face_direction(AGE_DIR_DOWN);
 		//cIndi.change_room(rm_outside);
 		//cIndi.animate("s_indi_animation",0.1,eOnce,eBlock);
@@ -50,8 +51,8 @@ function cave_skeleton_look_at()
 		//cIndi.set_inventory_quantity(iKey,0);
 		//iKey.script_name = "Hello";
 		//cIndi.testing = "Hallo";
-		cIndi.walk(150,150,eBlock);
-		cIndi.face_direction(eDirRight);
-		cIndi.say("These guys have seen better days.");
+		
+		//dTest.start();
+		//wait(40);
 		');
 }

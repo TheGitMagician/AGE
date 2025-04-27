@@ -54,6 +54,7 @@
     {"name":"txr_action_read","order":3,"path":"scripts/txr_action_read/txr_action_read.yy",},
     {"name":"txr_action_write","order":1,"path":"scripts/txr_action_write/txr_action_write.yy",},
     {"name":"txr_age_functions_dialog","order":1,"path":"scripts/txr_age_functions_dialog/txr_age_functions_dialog.yy",},
+    {"name":"txr_age_functions_internal","order":2,"path":"scripts/txr_age_functions_internal/txr_age_functions_internal.yy",},
     {"name":"txr_build_expr","order":3,"path":"scripts/txr_build_expr/txr_build_expr.yy",},
     {"name":"txr_build_loop_body","order":9,"path":"scripts/txr_build_loop_body/txr_build_loop_body.yy",},
     {"name":"txr_build_ops","order":5,"path":"scripts/txr_build_ops/txr_build_ops.yy",},

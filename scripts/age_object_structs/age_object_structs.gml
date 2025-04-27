@@ -13,6 +13,7 @@ function Object() constructor
 	
 	blocked = false;
 	yield_manager = undefined;
+	called_from_rep_exec_always = false;
 
 	moving = false;
 	//xend = 0;
@@ -27,7 +28,6 @@ function Object() constructor
 	blocking_width = -1;
 	blocking_height = -1;
 	
-	called_from_rep_exec_always = false;
 	
 	static move = function(_xend,_yend,_blocking,_anywhere=false)
 	{
@@ -35,7 +35,7 @@ function Object() constructor
 		{ show_debug_message("AGE: Object.move(): Object `"+script_name+"` not moved because it's not in the current room.");
 			return; }
 		
-		if (txr_thread_current[txr_thread.type] == txr_thread_type.rep_exec_always) called_from_rep_exec_always = true;
+		__rep_exec_always_check();
 		
 		//stop previous movement
 		stop_moving();
@@ -83,8 +83,15 @@ function Object() constructor
 		
 		if (solid) o_age_main.walkarea_manager.update_mp_grid(); //occupy the new position of the character in the mp_grid
 		
-		walking = false;
 		moving = false;
+	}
+	
+	static __rep_exec_always_check = function()
+	{
+		//this method is only used in functions which have an ongoing effect (e.g. walking, moving)
+		//this flag is then checked when the character is updated to make sure that the effect continues running even if the game is blocked
+		//if - and only if - the function was started from a rep_exec_always script
+		if (txr_thread_current[txr_thread.type] == txr_thread_type.rep_exec_always) called_from_rep_exec_always = true;
 	}
 	
 	static __draw = function()

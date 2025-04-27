@@ -24,7 +24,7 @@ draw_set_halign(fa_left);
 draw_set_valign(fa_top);
 
 //Draw Dialog Options
-if (o_age_main.dialog.options_are_displayed)
+if (o_age_main.dialog.options_are_displayed())
 {
 	var d = o_age_main.dialog.current_dialog;
 	var option_count = 0;

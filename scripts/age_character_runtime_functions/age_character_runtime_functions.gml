@@ -1,24 +1,15 @@
 //@TODO: Why are these functions in a separate file? Shouldn't they be bound to the Character struct as static functions?
 function update_character_move()
 {
+	if ((o_age_main.blocked) && (called_from_rep_exec_always == false)) return;
+	
 	if (!walking) return; //@TODO this check is redundant currently because it is also done in o_age_main's Step Event
 	
 	movement_percent_along_path += movement_speed_on_path * movement_speed_modifier;
 	
 	if (movement_percent_along_path >= 1)
 	{
-		walking = false;
-		
-		if (path_exists(movement_path))
-		{
-			path_delete(movement_path);
-			movement_path = noone;
-		}
-		
-		image_index = 0;
-		image_speed = 0;
-		
-		if (solid) o_age_main.walkarea_manager.update_mp_grid(); //occupy the new position of the character in the mp_grid
+		stop_moving();
 		
 		if (blocked)
 		{
@@ -77,6 +68,8 @@ function update_character_move()
 
 function update_character_animation()
 {
+	if ((o_age_main.blocked) && (called_from_rep_exec_always == false)) return;
+	
 	if (!animating) return; //@TODO this check is redundant currently because it is also done in o_age_main's Step Event
 	
 	if (animate_direction == age.forward)
@@ -122,6 +115,8 @@ function update_character_animation()
 
 function update_character_say()
 {
+	if ((o_age_main.blocked) && (called_from_rep_exec_always == false)) return;
+	
 	if (!talking) return; //@TODO this check is redundant currently because it is also done in o_age_main's Step Event
 	
 	talk_duration_remaining --;
