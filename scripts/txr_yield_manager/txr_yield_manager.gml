@@ -1,3 +1,5 @@
+//the struct that is created whenever a TXR thread is blocked
+//it stores the thread reference and can restart it (either automatically after a timer has run out or called externally)
 function TXR_Yield_Manager(_thread, _blocking=true) constructor
 {
 	thread = _thread;
@@ -20,7 +22,8 @@ function TXR_Yield_Manager(_thread, _blocking=true) constructor
 
 	static continue_thread = function()
 	{
-		//returns the result of the thread (or -1 if thread doesn't produce a result)
+		//returns true if the thread still exists after it has been restarted or
+		//false if the thread has been destroyed (because it has reached the end or has caused an error)
 		
 		//unblock the game
 		if (blocking)

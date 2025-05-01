@@ -1,52 +1,57 @@
 # TXR changes
 
-## Added `o_txr` to Manage Initialization for the AGS-System
+## Added `o_txr` to Manage Initialization for the AGE-System
 
 * added [o_txr](project://o_txr)
 
-This object initializes TXR, adds the necessary white-listed GameMaker functions to it 
-as well as custom functions needed for the AGS-System to work (e.g. wait()).
+This object
 
-It also manages an array of TXR threads that are currently running and are single-shot scripts.
-As soon as one of these threads reaches the status `finished` it is destroyed.
+1) initializes TXR
+2) adds the AGE-specific macros/constants to TXR
+3) adds the necessary white-listed GameMaker functions to TXR
+4) adds the custom global AGE functions to TXR (global in the sense that they can be called without reference to an AGE struct, e.g. wait() )
+
+It also stores the constructor for the Yield_Manager which is created whenever a thread is yielded
+and stores its reference and can restart it either automatically (after a timer has run out) or via external call.
 
 
+## Added Functionality to "Block" the Game AdventureGameStudio-Style
 
-## Added Functionality to "Block" the Game AGS-Style
+* added a TXR_Yield_Manager struct in `o_txr`
 
-* added folder `AGE Functions` with script `txr_age_functions_misc` to the module
-* added [o_txr_dummy](project://o_txr_dummy)
-
-The script `txr_age_functions_misc` holds the function `txr_wait()`. It creates a temporary `o_txr_dummy`, stores the
-currently executing thread in it, then yields the thread.
-The thread can then be continued later on via `o_txr_dummy`s alarm[0] event.
-For the classic AGS wait(x) command it automatically starts the alarm and continues the thread once it has expired.
-Typically however, it is called as txr_wait(-1) - thus yielding the thread indefinitely.
-When the block is over you can then call its alarm[0] event via event_perform() to unblock the game.
+This TXR_Yield_Manager struct is instantiated whenever a thread is blocked (because of a blocking AGE function).
 Since the only script that runs while the game is blocked is rep_exec_always and this script cannot block the game itself
-there is automatically always only ever a maximum of 1 `o_txr_dummy` active at any time.
+there is automatically always only ever a maximum of 1 instane of this struct active at any time.
+This struct holds a reference to the blocked thread and can be restarted either after a timer has run out or with an external call.
 The blocked state of the whole engine is stored in `o_age_main`s `blocked` variable.
 
 
+## Added a Thread Type to TXR Threads
 
-## Changed `txr_run()`
+* expanded `txr_run()`
+* expanded `txr_thread_create()`
+* expanded `txr_thread_resume()`
 
 Officially txr_run() compiles a TXR script, creates a thread for it and resumes (=starts) the thread.
-It has been expanded to take two new arguments:
+It has been expanded to take a new argument
 
-* `monitor_for_destruction`: determines whether this thread is a one-shot thread that has to be monitored so that it can be destroyed once it is finished
-* `is_rep_exec_always`: is `true` if this thread is a repeatedly_execute_always thread. This enables code to run even though the game is blocked.
+* `thread_type`: this takes a value from the enum `txr_thread_type` (defined in `o_age_main`s Create Event)
 
-Also, the section `txr_thread_resume()` has been expanded so that the thread is deleted correctly.
+Thread types are for example `standard`, `dialog`, `rep_exec`. These enable different behaviors if the threads are started or restared.
+To check for these different scenarios, `txr_thread_resume()` has been expanded. For example, it now checks whether threads can be destroyed
+after they have finished or if they need to be kept around because they are rep_exec. Also, it checks rep_exec_always threads for
+blocking functions (which are not allowed) and throws an error message if any are found.
 
 
+## Added a Scope to TXR Threads
 
-## Changed `txr_thread_create()`
+* expanded `txr_thread_create()`
 
-Expanded the enum `txr_thread` with the value `rep_exec_always` and added a third argument to the function which sets this value.
-This is used to determine whether a thread is a repeatedly_execute_always thread which means that code that it calls (e.g. in characters or objects)
-is allowed to be executed even if the game is blocked by a blocking function.
+In `txr_thread_create()` the thread now gets a `txr_thread.scope` parameter. Originally this was meant to store the scope the thread was
+started in so that when it is continued after a yield it knew its context. However, it turns out that for AGE's functionality all threads
+should be run in the same context (which then provides all the necessary accessible variables/structs).
 
+So currently this scope is hard-set to `o_age_main`.
 
 
 ## Removed Bug From Default-Function Feature
@@ -73,7 +78,6 @@ Instead write your own code - where you just have to make sure that it sets the 
 The arguments that you can use in this function are [0]= name of the missing function, [1],[2],...= the arguments that were supplied to this missing function.
 
 
-
 ## Extended TXR Error Messages
 
 * changed `txr_thread_resume()` (at the very end)
@@ -82,8 +86,7 @@ The arguments that you can use in this function are [0]= name of the missing fun
 In both scripts I added the string "TXR Error: " to the beginning of the `txr_thread.result` output to make it more clear where the error originated
 
 
-
-## Added ability to call and run methods of Structs
+## Added Ability to Call and Run Methods of Structs
 
 * changed `txr_init()`
 * changed `txr_thread_resume()`
@@ -101,3 +104,50 @@ It is set in txr_thread_resume() at txr_action.get_field.
 It is read in txr_thread_resume() at txr_action.value_call. There the function that is called is wrapped in a method() call which uses the context from the global variable to execute the function in.
 This way you can now call an anonymous struct function in the context of the struct that it was gotten from.
 The original behavior is still valid. If you simply call a function without any context then TXR will check it against its global function map.
+
+
+## Added Better Error Detection when Non-Existing Variables are Accessed
+
+* changed `txr_thread_resume`
+
+In `txr_thread_resume` the parts `ident` and `set_ident` in the `txr_action` switch statement have been expanded so that they throw error messages if a non-existing variable or struct is called
+instead of later crashing GameMaker when the thread is run.
+
+
+## Added Ability to Define Setter-Methods
+
+* changed `txr_compile_setter()`
+
+txr_compile_setter() now checks if a field that is accessed in a struct has a special setter method. If the variable is then set via a TXR script
+it automatically calls the corresponding setter method behind the scenes. This is useful if setting the variable should trigger other effects as well.
+This is not necessary for all variables but only for those that need additional stuff to happen.
+
+The setter method has to be named exactily like the variable and include the prefix __set_, so e.g. for the variable `test` -> `__set_test()`.
+
+
+## Prevented TXR from Creating new Variables in Objects/Structs
+
+* changed `txr_thread_resume()`
+
+In `txr_thread_resume()` the section `set_field` in the `txr_action` switch statement was expaneded so that it now checks whether a variable
+that you want to set, actually exists. If it doesn't TXR throws an error. This does NOT affect local TXR thread variables. It only affects
+variables of the object in the context of which the thread is run. In AGE this is currently always the object `o_age_main`.
+It also applies to any structs that you reference from a TXR script.
+This prevents the user from creating new variables in these objects/structs. Instead the user should use local TXR variables or AGE's global variable system
+if he needs persistent variables.
+
+
+## Added Limited Ability to Access Assets Directly from TXR 
+
+* changed `txr_compile_getter()`
+
+In `txr_compile_getter()` the section `ident` in the `txr_node` switch statement was expanded so that it now checks whether
+a reference is an asset that starts with the prefix `rm_` or `s_` and then allows direct access to this asset via TXR.
+This allows the user to write `cIndi.change_room(rm_cave);` instead of `cIndi.change_room("rm_cave");` which is not only nicer to write
+but also means that you don't have to do as many sanity checks on the parameter's value.
+
+This could either be expaneded so that the user can create his own whitelist of allowed asset name prefixes that can be accessed by TXR.
+Or the system could be thrown out again if it seems too risky and instead the user has to import all asset names that are supposed to be
+accessed by TXR via `txr_constant_add()`.
+
+

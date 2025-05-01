@@ -1,4 +1,4 @@
-function Character() constructor
+function AGE_Character() constructor
 {
 	script_name = "";
 	
@@ -42,6 +42,8 @@ function Character() constructor
 	image_index = 0;
 	image_speed = 0;
 	image_xscale = 1;
+	
+	scale_factor = 1;
 	
 	costume_last_sprite = noone;
 	
@@ -216,6 +218,8 @@ function Character() constructor
 		{ show_debug_message("AGE: Character.change_room(): Can't change room because room `"+string(_new_room)+"` doesn't exist.");
 			return; }
 		
+		_new_room = asset_get_index(_new_room); //@TODO remove this line once bug #10515 has been resolved
+		
 		if (current_room == _new_room)
 		{ show_debug_message("AGE: Character.change_room(): Can't change room because `"+script_name+"`is already in room `"+room_get_name(current_room)+"`.");
 			return; }
@@ -289,12 +293,13 @@ function Character() constructor
 		
 		//temporarily disable solid flag and re-calculate walkarea mask (which automatically also updates the mp_grid)
 		//this is necessary so that the character can start walking and isn't boxed in by its own blocking box in the pathfinding grid
-		if (solid)
-		{
-			solid = false;
-			o_age_main.walkarea_manager.update_walkarea_mask();
-			solid = true;
-		}
+		//if (solid)
+		//{
+		//	solid = false;
+		//	o_age_main.walkarea_manager.update_walkarea_mask();
+		//	solid = true;
+		//}
+		o_age_main.walkarea_manager.update_mp_grid([self]);
 		
 		var goal_pos = o_age_main.walkarea_manager.find_nearest_point_on_walkarea(_xend,_yend);
 		
@@ -346,7 +351,7 @@ function Character() constructor
 	
 	static add_inventory = function(_item, _quantity=1, _at_index=-1)
 	{
-		if (!is_instanceof(_item,Inventory_Item))
+		if (!is_instanceof(_item,AGE_Inventory_Item))
 		{ show_debug_message("AGE: Character.add_inventory(): Supplied item is not a valid inventory item.");
 			return; }
 		
@@ -389,7 +394,7 @@ function Character() constructor
 	
 	static lose_inventory = function(_item, _quantity=1)
 	{
-		if (!is_instanceof(_item,Inventory_Item))
+		if (!is_instanceof(_item,AGE_Inventory_Item))
 			{ show_debug_message("AGE: Character.lose_inventory(): Supplied item is not a valid inventory item.");
 				return; }
 		
@@ -432,7 +437,7 @@ function Character() constructor
 	
 	static __set_active_inventory_item = function(_item)
 	{
-		if (!is_instanceof(_item,Inventory_Item))
+		if (!is_instanceof(_item,AGE_Inventory_Item))
 		{ show_debug_message("AGE: Character.active_inventory_item: Supplied item is not a valid inventory item.");
 			return; }
 			
@@ -450,7 +455,7 @@ function Character() constructor
 	
 	static has_inventory_item = function(_item)
 	{
-		if (!is_instanceof(_item,Inventory_Item))
+		if (!is_instanceof(_item,AGE_Inventory_Item))
 		{ show_debug_message("AGE: Character.has_inventory_item():  The supplied item is not a valid inventory item.");
 			return false; }
 		
@@ -465,7 +470,7 @@ function Character() constructor
 	
 	static get_inventory_quantity = function(_item)
 	{
-		if (!is_instanceof(_item,Inventory_Item))
+		if (!is_instanceof(_item,AGE_Inventory_Item))
 		{ show_debug_message("AGE: Character.get_inventory_quantity(): Supplied item is not a valid inventory item.");
 			return 0; }
 		
@@ -480,7 +485,7 @@ function Character() constructor
 	
 	static set_inventory_quantity = function(_item, _quantity)
 	{
-		if (!is_instanceof(_item,Inventory_Item))
+		if (!is_instanceof(_item,AGE_Inventory_Item))
 		{ show_debug_message("AGE: Character.set_inventory_quantity():  The supplied item is not a valid inventory item.");
 			return; }
 			
@@ -610,7 +615,7 @@ function Character() constructor
 	
 	static __draw = function()
 	{
-		draw_sprite_ext(sprite_index,image_index,x,y,image_xscale,1,0,c_white,1);
+		draw_sprite_ext(sprite_index,image_index,x,y,image_xscale*scale_factor,scale_factor,0,c_white,1);
 	}
 	
 	static __cleanup = function()
@@ -620,7 +625,7 @@ function Character() constructor
 	}
 }
 
-function Character_Manager() constructor
+function AGE_Character_Manager() constructor
 {
 	//the actual character structs are stored in o_age_main's characters[] array.
 	//yes, this is not nicely decoupled - they could be stored in here, but it has some benefits if they are stored centrally
@@ -633,7 +638,7 @@ function Character_Manager() constructor
 		{ show_debug_message("AGE: Can't create character `"+_script_name+"` because the script name already exists.");
 			return; }
 		
-		var char = new Character();
+		var char = new AGE_Character();
 	
 		variable_instance_set(o,_script_name,char); //add character's script name to o_age_main's variables so that it can be accessed by TXR
 		array_push(o.characters, char); //add character reference to o_age_main's characters array so that it can be accessed by other resources

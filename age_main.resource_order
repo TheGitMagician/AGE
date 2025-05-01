@@ -1,7 +1,6 @@
 {
   "FolderOrderSettings":[
     {"name":"Dialogs","order":15,"path":"folders/Dialogs.yy",},
-    {"name":"Scripts","order":17,"path":"folders/Scripts.yy",},
     {"name":"Helper Functions","order":14,"path":"folders/Helper Functions.yy",},
     {"name":"Walkareas","order":1,"path":"folders/Helper Objects/Walkareas.yy",},
     {"name":"AGE Adventure Game Engine","order":1,"path":"folders/Modules/AGE Adventure Game Engine.yy",},
@@ -14,13 +13,14 @@
     {"name":"Pathing","order":5,"path":"folders/Modules/AGE Adventure Game Engine/Pathing.yy",},
     {"name":"Walkarea","order":6,"path":"folders/Rooms/Cave/Walkarea.yy",},
     {"name":"Outside","order":1,"path":"folders/Rooms/Outside.yy",},
+    {"name":"Scripts","order":17,"path":"folders/Scripts.yy",},
     {"name":"Sophia","order":1,"path":"folders/Sprites/Characters/Sophia.yy",},
     {"name":"Objects","order":1,"path":"folders/Sprites/Objects.yy",},
     {"name":"Hat","order":1,"path":"folders/Sprites/Objects/Hat.yy",},
   ],
   "ResourceOrderSettings":[
     {"name":"fnt_pixel","order":16,"path":"fonts/fnt_pixel/fnt_pixel.yy",},
-    {"name":"note_AGS_ToDos","order":13,"path":"notes/note_AGS_ToDos/note_AGS_ToDos.yy",},
+    {"name":"note_AGE_ToDos","order":13,"path":"notes/note_AGE_ToDos/note_AGE_ToDos.yy",},
     {"name":"note_TXR_changes","order":11,"path":"notes/note_TXR_changes/note_TXR_changes.yy",},
     {"name":"note_TXR_ToDos","order":12,"path":"notes/note_TXR_ToDos/note_TXR_ToDos.yy",},
     {"name":"o_game","order":9,"path":"objects/o_game/o_game.yy",},
@@ -97,7 +97,7 @@
     {"name":"txr_throw","order":3,"path":"scripts/txr_throw/txr_throw.yy",},
     {"name":"txr_value_read","order":7,"path":"scripts/txr_value_read/txr_value_read.yy",},
     {"name":"txr_value_write","order":5,"path":"scripts/txr_value_write/txr_value_write.yy",},
-    {"name":"txr_yield_manager","order":3,"path":"scripts/txr_yield_manager/txr_yield_manager.yy",},
+    {"name":"txr_yield_manager","order":2,"path":"scripts/txr_yield_manager/txr_yield_manager.yy",},
     {"name":"fgrd_cave","order":1,"path":"sprites/fgrd_cave/fgrd_cave.yy",},
     {"name":"s_hat","order":1,"path":"sprites/s_hat/s_hat.yy",},
     {"name":"s_helper_rectangle","order":1,"path":"sprites/s_helper_rectangle/s_helper_rectangle.yy",},

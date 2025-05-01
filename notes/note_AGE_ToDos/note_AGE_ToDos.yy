@@ -1,7 +1,7 @@
 {
   "$GMNotes":"",
-  "%Name":"note_AGS_ToDos",
-  "name":"note_AGS_ToDos",
+  "%Name":"note_AGE_ToDos",
+  "name":"note_AGE_ToDos",
   "parent":{
     "name":"age_main",
     "path":"age_main.yyp",

@@ -11,7 +11,6 @@
   "defaultScriptType":1,
   "Folders":[
     {"$GMFolder":"","%Name":"Dialogs","folderPath":"folders/Dialogs.yy","name":"Dialogs","resourceType":"GMFolder","resourceVersion":"2.0",},
-    {"$GMFolder":"","%Name":"Scripts","folderPath":"folders/Scripts.yy","name":"Scripts","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Helper Functions","folderPath":"folders/Helper Functions.yy","name":"Helper Functions","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Helper Objects","folderPath":"folders/Helper Objects.yy","name":"Helper Objects","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Hotspots","folderPath":"folders/Helper Objects/Hotspots.yy","name":"Hotspots","resourceType":"GMFolder","resourceVersion":"2.0",},
@@ -43,6 +42,7 @@
     {"$GMFolder":"","%Name":"Walkarea","folderPath":"folders/Rooms/Cave/Walkarea.yy","name":"Walkarea","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Outside","folderPath":"folders/Rooms/Outside.yy","name":"Outside","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Graphics","folderPath":"folders/Rooms/Outside/Graphics.yy","name":"Graphics","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Scripts","folderPath":"folders/Scripts.yy","name":"Scripts","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Sprites","folderPath":"folders/Sprites.yy","name":"Sprites","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Characters","folderPath":"folders/Sprites/Characters.yy","name":"Characters","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Indi","folderPath":"folders/Sprites/Characters/Indi.yy","name":"Indi","resourceType":"GMFolder","resourceVersion":"2.0",},
@@ -63,7 +63,7 @@
   "name":"age_main",
   "resources":[
     {"id":{"name":"fnt_pixel","path":"fonts/fnt_pixel/fnt_pixel.yy",},},
-    {"id":{"name":"note_AGS_ToDos","path":"notes/note_AGS_ToDos/note_AGS_ToDos.yy",},},
+    {"id":{"name":"note_AGE_ToDos","path":"notes/note_AGE_ToDos/note_AGE_ToDos.yy",},},
     {"id":{"name":"note_TXR_changes","path":"notes/note_TXR_changes/note_TXR_changes.yy",},},
     {"id":{"name":"note_TXR_ToDos","path":"notes/note_TXR_ToDos/note_TXR_ToDos.yy",},},
     {"id":{"name":"hotspot_rectangle","path":"objects/hotspot_rectangle/hotspot_rectangle.yy",},},

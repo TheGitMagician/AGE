@@ -7,6 +7,9 @@ function update_character_move()
 	
 	movement_percent_along_path += movement_speed_on_path * movement_speed_modifier;
 	
+	//var w = o_age_main.walkarea_manager.point_get_walkarea_index(x,y);
+	//if (w > -1) scale_factor = o_age_main.walkarea_manager.get_scaling_at_walkarea_y(w,y);
+	
 	if (movement_percent_along_path >= 1)
 	{
 		stop_moving();

@@ -1,4 +1,4 @@
-function Object() constructor
+function AGE_Object() constructor
 {
 	script_name = "";
 	
@@ -106,7 +106,7 @@ function Object() constructor
 	}
 }
 
-function Object_Manager() constructor
+function AGE_Object_Manager() constructor
 {
 	//the actual object structs are stored in o_age_main's objects[] array.
 	//yes, this is not nicely decoupled - they could be stored in here, but it has some benefits if they are stored centrally
@@ -119,7 +119,7 @@ function Object_Manager() constructor
 		{ show_debug_message("AGE: Can't create object `"+_script_name+"` because the script name already exists.");
 			return; }
 	
-		var obj = new Object();
+		var obj = new AGE_Object();
 	
 		variable_instance_set(o,_script_name,obj); //add object's script name to o_age_main's variables so that it can be accessed by TXR
 		array_push(o.objects, obj); //add oject reference to o_age_main's objects array so that it can be accessed by other resources

@@ -6,3 +6,5 @@ All functions have to react to repeatedly_execute_always calls - just like o_obj
 All functions should get a function in the beginning that initializes a struct with the necessary variables
 as well as some internal initialization (e.g. the repeatedly_execute_always check).
 They should also get a function in the end that destroys that struct and resets any internal variables.
+
+Remember: TXR can access all structs and variables that are referenced in `o_age_main`.

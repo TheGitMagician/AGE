@@ -26,6 +26,7 @@ function Textblock(_char,_text,_x=undefined,_y=undefined,_duration) constructor
 	
 	static __draw_gui = function()
 	{
+		// !!! the textblocks have to be drawn with draw_set_halign set to fa_center and draw_set_valign set to fa_bottom
 		var xx,yy,margin,max_width;
 		
 		margin = 5; 
@@ -34,7 +35,7 @@ function Textblock(_char,_text,_x=undefined,_y=undefined,_duration) constructor
 		xx = (xpos == undefined) ? char.x : xpos;
 		yy = (ypos == undefined) ? char.y : ypos;
 		
-		xx = clamp(xx,margin+(max_width div 2),room_width-min(max_width div 2,string_width(text))-margin);
+		xx = clamp(xx,margin+(min(max_width,string_width(text)) div 2),room_width-min(min(max_width,string_width(text)) div 2,string_width(text))-margin);
 		yy = clamp(yy,string_height_ext(text,font_get_size(fnt_pixel),min(max_width,string_width(text)))+margin,room_height-margin);
 		
 		draw_set_color(char.speech_color);

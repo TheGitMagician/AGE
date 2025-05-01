@@ -1,4 +1,4 @@
-function Global_Manager() constructor
+function AGE_Global_Manager() constructor
 {
 	waiting = false;
 	wait_steps = 0;

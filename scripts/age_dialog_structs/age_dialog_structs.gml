@@ -2,7 +2,7 @@
 #macro __AGE_DLG_OPTN_FLG_SAY 1
 #macro __AGE_DLG_OPTN_FLG_WAS_CHOSEN 2
 
-function Dialog(_dialog_manager) constructor
+function AGE_Dialog(_dialog_manager) constructor
 {
 	//things to remember
 	// * option 0 is the entry point for the dialog (@S in the dialog script)
@@ -143,7 +143,7 @@ function Dialog(_dialog_manager) constructor
 	}
 }
 
-function Dialog_Manager() constructor
+function AGE_Dialog_Manager() constructor
 {
 	//the actual inventory item structs are stored in o_age_main's dialogs[] array.
 	//yes, this is not nicely decoupled - they could be stored in here, but it has some benefits if they are stored centrally
@@ -224,7 +224,7 @@ function Dialog_Manager() constructor
 				
 				//then start a new dialog struct
 				line = string_replace(line,"===","");
-				current_dialog = new Dialog(self);
+				current_dialog = new AGE_Dialog(self);
 				current_dialog.script_name = string_trim(line);
 			}
 			
@@ -409,7 +409,7 @@ function Dialog_Manager() constructor
 			return;
 		}
 		
-		if (!is_instanceof(_dialog,Dialog))
+		if (!is_instanceof(_dialog,AGE_Dialog))
 		{
 			show_debug_message("AGE: Can't change dialog. The supplied dialog is not a valid dialog. Ending dialog.");
 			if (current_dialog != undefined) stop();
@@ -494,7 +494,7 @@ function Dialog_Manager() constructor
 		
 		var v = variable_instance_get(o, _script_name);
 		
-		if (is_instanceof(v, Dialog))
+		if (is_instanceof(v, AGE_Dialog))
 			return v;
 		else
 			return undefined;

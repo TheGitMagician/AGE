@@ -76,13 +76,13 @@ function initialize_variables()
 
 function initialize_game_managers()
 {
-	global_manager = new Global_Manager();
-	character = new Character_Manager();
-	object = new Object_Manager();
-	inventory = new Inventory_Manager();
-	dialog = new Dialog_Manager();
+	global_manager = new AGE_Global_Manager();
+	character = new AGE_Character_Manager();
+	object = new AGE_Object_Manager();
+	inventory = new AGE_Inventory_Manager();
+	dialog = new AGE_Dialog_Manager();
 
-	walkarea_manager = new Walkarea_Manager();
+	walkarea_manager = new AGE_Walkarea_Manager();
 }
 
 function fast_forward()

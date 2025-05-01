@@ -60,12 +60,3 @@ txr_function_add("load_game", txr_load_game,1);
 
 //provide the default function that is called when a function is unknown to TXR
 txr_function_default = scr_txr_demo_default_func;
-
-//@TODO: delete this part because the threads will manage their own destruction in teh future
-/*
-//create array that stores the running threads and monitors them for whether they have finished and can be destroyed
-//not all threads will be stored in this array. Some threads (like repeatedly_execute) will be restarted every frame
-//and thus will not be destroyed automatically once they have run once
-threads = [];
-*/
-

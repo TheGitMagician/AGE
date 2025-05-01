@@ -10,17 +10,19 @@
 //txr_run(@'
 //	show_message(get_timer_pos(0));
 //	');
-	show_message(global_manager.get_timer_pos(0));
+//	show_message(global_manager.get_timer_pos(0));
 //cIndi.x = irandom_range(-100,room_width+100);
 //cIndi.y = irandom_range(-100,room_height+100);
+
+show_debug_message(walkarea_manager.get_scaling(1,mouse_y));
 
 //txr_run(@'
 //	if (cSophia.current_room == rm_cave)
 //	{	
-//		cSophia.change_room(rm_outside, 180, 110, eDirUp);
+//		cSophia.change_room("rm_outside", 180, 110, eDirUp);
 //	}
 //	else
 //	{
-//		cSophia.change_room(rm_cave, 150, 90, eDirDown);
+//		cSophia.change_room("rm_cave", 150, 90, eDirDown);
 //	}
 //	');

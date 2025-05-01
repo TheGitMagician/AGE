@@ -66,7 +66,7 @@ function txr_compile_setter(q) {
 
 //alternative code (see comment for txr_node.field above)
 //var special_setter = true;
-//if (is_instanceof(variable_instance_get(o_age_main,s[2]), Character))
+//if (is_instanceof(variable_instance_get(o_age_main,s[2]), AGE_Character))
 //{
 //	switch (q[3])
 //	{

@@ -13,9 +13,7 @@ draw_set_valign(fa_bottom);
 
 n = array_length(textblocks);
 for (i=0; i<n; i++)
-{
 	textblocks[i].__draw_gui();
-}
 
 draw_set_color(c_white);
 

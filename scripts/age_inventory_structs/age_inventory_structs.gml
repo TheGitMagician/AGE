@@ -1,4 +1,4 @@
-function Inventory_Item() constructor
+function AGE_Inventory_Item() constructor
 {
 	script_name = "";
 	
@@ -28,7 +28,7 @@ function Inventory_Item() constructor
 	}
 }
 
-function Inventory_Manager() constructor
+function AGE_Inventory_Manager() constructor
 {
 	//the actual inventory item structs are stored in o_age_main's inventory_items[] array.
 	//yes, this is not nicely decoupled - they could be stored in here, but it has some benefits if they are stored centrally
@@ -41,7 +41,7 @@ function Inventory_Manager() constructor
 		{ show_debug_message("AGE: Can't create inventory item `"+_script_name+"` because the script name already exists.");
 			return; }
 		
-		var inv_item = new Inventory_Item();
+		var inv_item = new AGE_Inventory_Item();
 	
 		variable_instance_set(o,_script_name,inv_item); //add item's script name to o_age_main's variables so that it can be accessed by TXR
 		array_push(o.inventory_items, inv_item); //add item reference to o_age_main's inventory_items array so that it can be accessed by other resources
@@ -72,7 +72,7 @@ function Inventory_Manager() constructor
 		
 		var v = variable_instance_get(o, _script_name);
 		
-		if (is_instanceof(v, Inventory_Item))
+		if (is_instanceof(v, AGE_Inventory_Item))
 			return v;
 		else
 			return undefined;
