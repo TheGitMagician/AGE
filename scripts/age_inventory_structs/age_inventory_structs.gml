@@ -6,15 +6,13 @@ function AGE_Inventory_Item() constructor
 	
 	sprite = noone;
 	
-	static __set_sprite = function(_name)
+	static __set_sprite = function(_sprite)
 	{
-		if (asset_get_type(_name) != asset_sprite)
-		{ show_debug_message("AGE: `"+_name+"` - No matching sprite asset found.");
+		if (!sprite_exists(_sprite)) //a more robust check would be `if (asset_get_type(_sprite) != asset_sprite)` but that doesn't work on HTML5
+		{ show_debug_message("AGE: `"+string(_sprite)+"` - No matching sprite asset found.");
 			return; }
-			
-		var asset_index = asset_get_index(_name);
 		
-		sprite = asset_index;
+		sprite = _sprite;
 	}
 	
 	static __set_name = function(_name)

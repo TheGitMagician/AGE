@@ -297,6 +297,10 @@ function AGE_Walkarea_Manager() constructor
 		//this is currently used in Character.walk() to stop the character that starts walking from
 		//blocking himself from walking
 		
+		//@TODO could be improved by only setting a variable like `mp_grid_has_to_be_updated` here
+		//and then checking that in o_age_main at the end of the Step Event and then do the update once
+		//right now it can happen that multiple characters/objects request an update in the same frame
+		
 		if (mp_grid == undefined)
 			mp_grid = mp_grid_create(0,0,mask_width,mask_height,1,1);
 		else

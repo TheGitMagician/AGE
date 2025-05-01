@@ -25,7 +25,7 @@ function cave_doorway_look_at()
 		cIndi.say("I will explore the outside of the cave.");
 		cIndi.walk(20,150,eBlock);		
 		cIndi.say("See you!");
-		cIndi.change_room("rm_outside",190,110,eDirRight); //@TODO remove the quotation marks around the room name as soon as bug #10515 is resolved
+		cIndi.change_room(rm_outside,190,110,eDirRight);
 		wait(20);
 		cIndi.say("Looks nicer than I thought.");
 		//cSophia.say("Just great...");

@@ -14,7 +14,14 @@
 //cIndi.x = irandom_range(-100,room_width+100);
 //cIndi.y = irandom_range(-100,room_height+100);
 
-show_debug_message(walkarea_manager.get_scaling(1,mouse_y));
+//show_debug_message(walkarea_manager.get_scaling(1,mouse_y));
+
+txr_run(@'
+	if (cSophia.current_room == rm_cave) cSophia.change_room(rm_outside);
+	else cSophia.change_room(rm_cave);
+	');
+
+//show_message(rm_cave);
 
 //txr_run(@'
 //	if (cSophia.current_room == rm_cave)

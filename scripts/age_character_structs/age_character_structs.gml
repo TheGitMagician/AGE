@@ -126,7 +126,7 @@ function AGE_Character() constructor
 	
 	static animate = function(_name, _speed, _repeat_style=age.once, _blocking=false, _direction=age.forward, _first_frame=0)
 	{
-		if (asset_get_type(_name) != asset_sprite)
+		if (!sprite_exists(_name)) //a more robust check would be `if (asset_get_type(_name) != asset_sprite)` but that doesn't work on HTML5
 		{ show_debug_message("AGE: `"+_name+"` - No matching sprite asset found for the animation.");
 			return; }
 		
@@ -214,11 +214,9 @@ function AGE_Character() constructor
 	
 	static change_room = function(_new_room, _x=-1, _y=-1, _dir=-1)
 	{
-		if (asset_get_type(_new_room) != asset_room)
+		if (!room_exists(_new_room)) //a more robust check would be `if (asset_get_type(_new_room) != asset_room)` but that doesn't work on HTML5
 		{ show_debug_message("AGE: Character.change_room(): Can't change room because room `"+string(_new_room)+"` doesn't exist.");
 			return; }
-		
-		_new_room = asset_get_index(_new_room); //@TODO remove this line once bug #10515 has been resolved
 		
 		if (current_room == _new_room)
 		{ show_debug_message("AGE: Character.change_room(): Can't change room because `"+script_name+"`is already in room `"+room_get_name(current_room)+"`.");
@@ -233,11 +231,27 @@ function AGE_Character() constructor
 		
 		if (is_the_player) //if the player character changes rooms then the new room has to be loaded
 		{
-			if (o_age_main.skipping_cutscene)
+			//stop movement of all characters/objects in the current room
+			stop_moving();
+			
+			var i,n;
+			n = array_length(o_age_main.characters);
+			for (i=0; i<n; i++)
+				if ((o_age_main.characters[i].current_room == room) && (o_age_main.characters[i].moving)) o_age_main.characters[i].stop_moving();
+			
+			n = array_length(o_age_main.objects);
+			for (i=0; i<n; i++)
+				if ((o_age_main.objects[i].in_room == room) && (o_age_main.objects[i].moving)) o_age_main.objects[i].stop_moving();
+			
+			//if a cutscene is currently active and being skipped a little "detour" is necessary
+			//because the room change only happens at the end of the current event
+			if (o_age_main.skipping_cutscene) 
 			{
 				o_age_main.continue_skipping_cutscene_after_room_change = true;
 				o_age_main.skipping_cutscene = false;
 			}
+			
+			//finally go to the new room
 			room_goto(current_room);			
 		}
 		else //if another character changes rooms then free its position on the mp_grid
@@ -314,6 +328,7 @@ function AGE_Character() constructor
 		movement_next_direction_check = 0;
 		movement_speed_modifier = 1;
 		
+		moving = true;
 		walking = true;
 		__rep_exec_always_check();
 		
