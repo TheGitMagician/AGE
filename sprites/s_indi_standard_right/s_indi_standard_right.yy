@@ -30,8 +30,8 @@
   "nineSlice":null,
   "origin":9,
   "parent":{
-    "name":"Indi",
-    "path":"folders/Sprites/Characters/Indi.yy",
+    "name":"Walking",
+    "path":"folders/Sprites/Characters/Indi/Walking.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

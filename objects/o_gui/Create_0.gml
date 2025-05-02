@@ -4,24 +4,20 @@ statusline = "";
 
 textblocks = [];
 
-function Textblock(_char,_text,_x=undefined,_y=undefined,_duration) constructor
+function Textblock(_char,_text,_x=undefined,_y=undefined) constructor
 {
+	parent = other;
+	
 	char = _char;
 	text = _text;
 	xpos = _x;
 	ypos = _y;	
-	duration = _duration;
 	color = _char.speech_color;
 	
-	static __step = function()
+	static destroy = function()
 	{
-		duration --;
-		
-		if (duration <= 0)
-		{
-			var i = array_get(textblocks,self);
-			array_delete(textblocks,i,1);
-		}
+		var i = array_get_index(parent.textblocks,self);
+		array_delete(parent.textblocks,i,1);
 	}
 	
 	static __draw_gui = function()
@@ -43,25 +39,10 @@ function Textblock(_char,_text,_x=undefined,_y=undefined,_duration) constructor
 	}
 }
 
-function create_textblock(_x,_y,_text,_duration,_color)
+function create_textblock(_char, _text, _x, _y)
 {
-	var t = new Textblock(_x,_y,_text,_duration,_color);
-	
+	var t = new Textblock(_char, _text, _x, _y);	
 	array_push(textblocks, t);
 	
 	return t;
-}
-
-function delete_textblock(_id)
-{
-	var i = array_get_index(textblocks,_id);
-	
-	if (i == -1) return;
-	
-	array_delete(textblocks,i,1);
-}
-
-function delete_all_textblocks()
-{
-	array_delete(textblocks,0,array_length(textblocks));
 }

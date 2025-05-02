@@ -63,8 +63,6 @@ function txr_end_cutscene()
 	{ show_debug_message("AGE: end_cutscene(): Can't end cutscene. Game is not in a cutscene.");
 		return; }
 	
-	o_gui.delete_all_textblocks();
-	
 	o_age_main.in_cutscene = false;
 	o_age_main.skipping_cutscene = false;	
 }

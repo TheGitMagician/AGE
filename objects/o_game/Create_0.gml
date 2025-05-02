@@ -5,6 +5,7 @@ o_age_main.character.create("cIndi", {
 	y: 120,
 	name: "Indi",
 	walking_costume: "s_indi_standard",
+	talking_costume: "s_indi_talk",
 	is_player_character: true
 });
 
@@ -14,6 +15,7 @@ o_age_main.character.create("cSophia", {
 	y: 130,
 	name: "Sophia",
 	walking_costume: "s_sophia_standard",
+	talking_costume: "s_sophia_standard",
 	speech_color: c_fuchsia
 });
 

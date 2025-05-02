@@ -10,12 +10,15 @@
 //	');
 
 txr_run(@'
-	cIndi.change_room(rm_outside);
+	//cSophia.animate(s_indi_animation,0.2,eOnce,eBlock);
+	cIndi.say("A long test sentence.");
+	cIndi.say("Okay!");
+	cIndi.say("Let`s continue.");
 	');
 
 //show_message(os_type);
 
-//walkarea_manager.set_scaling(0,0.8,1.2);
+//walkarea_manager.set_scaling(0,0.8,1.5);
 
 //cIndi.add_inventory(iMap);
 

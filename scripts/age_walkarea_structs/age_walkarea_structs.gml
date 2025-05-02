@@ -22,7 +22,8 @@ function AGE_Walkarea_Manager() constructor
 	grid_mask = ds_grid_create(mask_width,mask_height); //used for the mp_grid (0=walkarea, 1=no walkarea / blocked by character or object)
 	
 	grid_scale_levels = ds_grid_create(max_nr_walkareas,mask_height); //this is a special grid because it only stores one column for each walkarea
-	//each column stores the scale levels for one walkarea along the y-axis (1=standard scale, 0=invisible, 2=double size)
+																																		//each column stores the scale levels for one walkarea along the y-axis 
+																																		//(1=standard scale, 0=invisible, 2=double size)
 	
 	//motion planning variables
 	mp_grid = undefined;	
@@ -175,7 +176,7 @@ function AGE_Walkarea_Manager() constructor
 		{ show_debug_message("AGE: set_scaling(): Invalid scale factor. Factors must be between 0 and 2.");
 			return; }
 		
-		var start_y, end_y, ix, iy, height, i;
+		var start_y, end_y, ix, iy, height;
 		
 		//find top and bottom edges of walkarea
 		start_y = -1;
@@ -209,9 +210,10 @@ function AGE_Walkarea_Manager() constructor
 			if (end_y > -1)
 				break;
 		}
-			
+		
+		//set the new scale levels in the appropriate column of the scaling grid
 		height = end_y - start_y;
-
+		
 		ds_grid_set_region(grid_scale_levels,_id,0,_id,mask_height-1,1);
 		
 		i=0;
@@ -220,13 +222,18 @@ function AGE_Walkarea_Manager() constructor
 			ds_grid_set(grid_scale_levels, _id, iy, _min+((_max-_min)*(i/height)));
 			i++;
 		}
+		
+		//update character's scale levels
+		array_foreach(o_age_main.characters,function(_element) {
+			_element.__update_scale_level();
+		});
 	}
 	
 	static get_scaling_at_walkarea_y = function(_id,_iy)
 	{
 		if ((_id < 0) || (_id >= max_nr_walkareas))
 		{ show_debug_message("AGE: set_scaling(): Invalid walkarea ID. Must be between 0 and "+string(max_nr_walkareas)+".");
-			return; }		
+			return 1; }		
 		
 		return ds_grid_get(grid_scale_levels,_id,_iy);
 	}
@@ -315,7 +322,7 @@ function AGE_Walkarea_Manager() constructor
 		for (i=0; i<n; i++)
 		{
 			c = o_age_main.characters[i];
-			if ((c.current_room != room) || (!c.solid) || (array_get_index(_excluding,c) != -1))
+			if ((c.current_room != room) || (!c.solid) || (array_get_index(_excluding,c) != -1) || (c.moving))
 				continue;
 			
 			if (c.blocking_width <= 0) blocking_w = sprite_get_width(c.sprite_index)*1.5;
@@ -439,6 +446,13 @@ function AGE_Walkarea_Manager() constructor
 	static __room_start = function()
 	{
 		update_walkarea_mask(); //this automatically also updates the mp_grid
+		
+		ds_grid_clear(grid_scale_levels,1);
+		
+		//update character's scale levels
+		array_foreach(o_age_main.characters,function(_element) {
+			_element.__update_scale_level();
+		});
 	}
 	
 	static __room_end = function()

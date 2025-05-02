@@ -16,10 +16,10 @@ txr_function_add("assert", scr_txr_demo_assert, 2);
 //add AGE constants to TXR parser
 txr_constant_add("noone", noone);
 txr_constant_add("_", undefined);
-txr_constant_add("eDirRight", AGE_DIR_RIGHT);
-txr_constant_add("eDirLeft", AGE_DIR_LEFT);
-txr_constant_add("eDirUp", AGE_DIR_UP);
-txr_constant_add("eDirDown", AGE_DIR_DOWN);
+txr_constant_add("eDirRight", 0);
+txr_constant_add("eDirUp", 1);
+txr_constant_add("eDirLeft", 2);
+txr_constant_add("eDirDown", 3);
 txr_constant_add("eForward", age.forward);
 txr_constant_add("eBackward", age.backward);
 txr_constant_add("eOnce", age.once);

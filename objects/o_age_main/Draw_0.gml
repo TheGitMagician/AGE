@@ -14,6 +14,7 @@ for (i=0; i<n; i++)
 	draw_order[i].__draw();
 }
 
+
 //if (path_exists(cIndi.movement_path))
 //{
 //	draw_path(cIndi.movement_path,0,0,true);

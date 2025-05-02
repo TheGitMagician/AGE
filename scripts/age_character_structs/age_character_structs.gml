@@ -14,18 +14,21 @@ function AGE_Character() constructor
 	yield_manager = undefined;
 	called_from_rep_exec_always = false;
 	
-	sprite_left = noone;
-	sprite_right = noone;	
-	sprite_up = noone;
-	sprite_down = noone;
+	walk_sprite_left = noone;
+	walk_sprite_right = noone;	
+	walk_sprite_up = noone;
+	walk_sprite_down = noone;
 	
-	costume_walking = "";
+	current_costume = undefined;
+	previous_costume = undefined;
+	costume_sprites_left = [];
+	costume_sprites_right = [];
+	costume_sprites_up = [];
+	costume_sprites_down = [];
 	
 	walking = false;
-	//xend = 0;
-	//yend = 0;
 	walk_speed = 2;
-	walk_anim_speed = 0.2;
+	walk_anim_speed = 0.3;
 	
 	moving = false; //moving is walking without the walk animation
 	
@@ -36,7 +39,7 @@ function AGE_Character() constructor
 	movement_speed_on_path = 0;
 	movement_speed_modifier = 1;
 	
-	direction = 0; //0=down, 1=up, 2=right, 3=left
+	direction = 0; //0=right, 1=up, 2=left, 3=down
 
 	sprite_index = noone;
 	image_index = 0;
@@ -44,8 +47,7 @@ function AGE_Character() constructor
 	image_xscale = 1;
 	
 	scale_factor = 1;
-	
-	costume_last_sprite = noone;
+	manual_scaling = false; //whether the character uses the scaling values of walkable areas or whatever the user sets `scale_factor` to
 	
 	solid = true;
 	blocking_width = -1;
@@ -63,10 +65,19 @@ function AGE_Character() constructor
 	
 	talking = false;
 	talk_duration_remaining = 0;
+	talk_anim_speed = 0.3;
 	talk_current_line = "";
 	talk_textblock = undefined; //the ID of the textblock in o_gui that displays the speech text
 	
 	speech_color = c_white;
+	
+	separate_talking_head = false;
+	talking_head_sprite_down = noone;
+	talking_head_sprite_up = noone;
+	talking_head_sprite_right = noone;
+	talking_head_sprite_left = noone;
+	talking_head_sprite_index = noone;
+	talking_head_image_index = 0;
 	
 	//variables only needed for de/serialization
 	movement_path_serialized = [];
@@ -83,61 +94,60 @@ function AGE_Character() constructor
 		asset_left = asset_get_index(name+"_left");
 		
 		
-		if ((asset_down == -1) && (asset_down == -1) && (asset_right == -1) && (asset_left == -1))
+		if ((asset_down == -1) && (asset_up == -1) && (asset_right == -1) && (asset_left == -1))
 		{
 			var asset_index = asset_get_index(name);
 			if (asset_index == -1)
 			{ show_debug_message("AGE: `"+name+"` - No matching asset found for the animation. Asset must be the exact name or end in '_down', '_up', '_right', '_left'.");
 				return; }
-			sprite_down = asset_index;		
-			sprite_up = asset_index;				
-			sprite_right = asset_index;
-			sprite_left = asset_index;
+			walk_sprite_down = asset_index;		
+			walk_sprite_up = asset_index;				
+			walk_sprite_right = asset_index;
+			walk_sprite_left = asset_index;
 		}
 		else if ((asset_down != -1) && (asset_up == -1) && (asset_right == -1) && (asset_left == -1))
 		{
-			sprite_down = asset_down;		
-			sprite_up = asset_down;			
-			sprite_right = asset_down;
-			sprite_left = asset_down;
+			walk_sprite_down = asset_down;		
+			walk_sprite_up = asset_down;			
+			walk_sprite_right = asset_down;
+			walk_sprite_left = asset_down;
 		}
 		else if ((asset_down != -1) && (asset_up != -1) && (asset_right == -1) && (asset_left == -1))
 		{
-			sprite_down = asset_down;
-			sprite_up = asset_up;			
-			sprite_right = asset_down;
-			sprite_left = asset_down;
+			walk_sprite_down = asset_down;
+			walk_sprite_up = asset_up;			
+			walk_sprite_right = asset_down;
+			walk_sprite_left = asset_down;
 		}
 		else if ((asset_down != -1) && (asset_up != -1) && (asset_right != -1) && (asset_left == -1))
 		{
-			sprite_down = asset_down;
-			sprite_up = asset_up;			
-			sprite_right = asset_right;
-			sprite_left = noone;
+			walk_sprite_down = asset_down;
+			walk_sprite_up = asset_up;			
+			walk_sprite_right = asset_right;
+			walk_sprite_left = noone;
 		}
 		else
 		{
-			sprite_down = asset_down;
-			sprite_up = asset_up;			
-			sprite_right = asset_right;
-			sprite_left = asset_left;
+			walk_sprite_down = asset_down;
+			walk_sprite_up = asset_up;			
+			walk_sprite_right = asset_right;
+			walk_sprite_left = asset_left;
 		}
 	}
 	
-	static animate = function(_name, _speed, _repeat_style=age.once, _blocking=false, _direction=age.forward, _first_frame=0)
+	static animate = function(_sprite, _speed, _repeat_style=age.once, _blocking=false, _direction=age.forward, _first_frame=0)
 	{
-		if (!sprite_exists(_name)) //a more robust check would be `if (asset_get_type(_name) != asset_sprite)` but that doesn't work on HTML5
-		{ show_debug_message("AGE: `"+_name+"` - No matching sprite asset found for the animation.");
+		if (!sprite_exists(_sprite)) //a more robust check would be `if (asset_get_type(_name) != asset_sprite)` but that doesn't work on HTML5
+		{ show_debug_message("AGE: `"+string(_sprite)+"` - No matching sprite asset found for the animation.");
 			return; }
 		
-		var asset_index = asset_get_index(_name);
+		//animate_sprite_index_before_animation = sprite_index;
+		//animate_image_index_before_animation = image_index;
+		//animate_image_xscale_before_animation = image_xscale;
+		//animate_image_speed_before_animation = image_speed;
+		costume_before_animation = current_costume;
 		
-		animate_sprite_index_before_animation = sprite_index;
-		animate_image_index_before_animation = image_index;
-		animate_image_xscale_before_animation = image_xscale;
-		animate_image_speed_before_animation = image_speed;
-		
-		sprite_index = asset_index;
+		sprite_index = _sprite;
 		
 		if ((_direction == age.backward) && (_first_frame == 0)) image_index = sprite_get_number(sprite_index);
 		else if (_direction == age.backward) image_index = _first_frame+1;
@@ -160,56 +170,115 @@ function AGE_Character() constructor
 	
 	static release_animation = function()
 	{
-		set_animation(costume_walking);
+		//set_animation(costume_walking);
 	}
 	
-	static set_walking_costume = function(name)
+	static define_costume = function(_costume, _sprite_name)
 	{
-		costume_walking = name;
-		set_animation(name);
+		//@TODO: what happens if only _up and _right are supplied (or any other combination without _down)?
+		//could this work with the binary trick 1,2,4,8 for the animation directions?
+		var asset_down, asset_up, asset_right, asset_left, sprite_left, sprite_right, sprite_up, sprite_down, body_string;
 		
-		if (direction == 0) sprite_index = sprite_down;
-		else if (direction == 1) sprite_index = sprite_up;
-		else if (direction == 2) sprite_index = sprite_right;
-		else if (direction == 3)
+		//check if the talking costume contains a separate talking head
+		if ((_costume == age.costume_talk) && (asset_get_index(_sprite_name+"_body_down") != -1))
+			body_string = "_body";
+		else
+			body_string = "";
+		
+		//read the sprite assets
+		asset_down	= asset_get_index(_sprite_name + body_string + "_down");
+		asset_up		=	asset_get_index(_sprite_name + body_string + "_up");
+		asset_right	= asset_get_index(_sprite_name + body_string + "_right");
+		asset_left	= asset_get_index(_sprite_name + body_string + "_left");
+		
+		//depending on which sprites (left, right, up, down) are available, assign the sprites to the costume
+		if ((asset_down == -1) && (asset_up == -1) && (asset_right == -1) && (asset_left == -1))
 		{
-			if (sprite_left == noone)
-			{
-				image_xscale = -1;
-				sprite_index = sprite_right;
-			}
-			else
-			{
-				image_xscale = 1;
-				sprite_index = sprite_left;
-			}			
+			var asset_index = asset_get_index(_sprite_name);
+			if (asset_index == -1)
+			{ show_debug_message("AGE: `"+_sprite_name+"` - No matching asset found for the animation. Asset must be the exact name or end in '_down', '_up', '_right', '_left'.");
+				return; }
+			costume_sprites_down[_costume] = asset_index;		
+			costume_sprites_up[_costume] = asset_index;				
+			costume_sprites_right[_costume] = asset_index;
+			costume_sprites_left[_costume] = asset_index;
 		}
+		else if ((asset_down != -1) && (asset_up == -1) && (asset_right == -1) && (asset_left == -1))
+		{
+			costume_sprites_down[_costume] = asset_down;		
+			costume_sprites_up[_costume] = asset_down;			
+			costume_sprites_right[_costume] = asset_down;
+			costume_sprites_left[_costume] = asset_down;
+		}
+		else if ((asset_down != -1) && (asset_up != -1) && (asset_right == -1) && (asset_left == -1))
+		{
+			costume_sprites_down[_costume] = asset_down;
+			costume_sprites_up[_costume] = asset_up;			
+			costume_sprites_right[_costume] = asset_down;
+			costume_sprites_left[_costume] = asset_down;
+		}
+		else if ((asset_down != -1) && (asset_up != -1) && (asset_right != -1) && (asset_left == -1))
+		{
+			costume_sprites_down[_costume] = asset_down;
+			costume_sprites_up[_costume] = asset_up;			
+			costume_sprites_right[_costume] = asset_right;
+			costume_sprites_left[_costume] = noone;
+		}
+		else
+		{
+			costume_sprites_down[_costume] = asset_down;
+			costume_sprites_up[_costume] = asset_up;			
+			costume_sprites_right[_costume] = asset_right;
+			costume_sprites_left[_costume] = asset_left;
+		}
+		
+		//if it's a talking costume with a separate talking head then save these sprites as well
+		if ((_costume == age.costume_talk) && (body_string != ""))
+		{
+			separate_talking_head = true;
+			
+			if (asset_down != -1)		talking_head_sprite_down	= asset_get_index(_sprite_name + "_head_down");
+			if (asset_up != -1)			talking_head_sprite_up		= asset_get_index(_sprite_name + "_head_up");
+			if (asset_right != -1)	talking_head_sprite_right = asset_get_index(_sprite_name + "_head_right");
+			if (asset_left != -1)		talking_head_sprite_left	= asset_get_index(_sprite_name + "_head_left");
+		}
+	}
+	
+	static change_costume = function(_costume)
+	{
+		previous_costume = current_costume;
+		current_costume = _costume;
+		
+		image_index = 0;
+		image_speed = 0;
+		
+		__update_sprites();
+		
+		//		if (walking)
+		//{
+		//	image_speed = walk_anim_speed;
+		//	image_index = 1;
+		//}
 	}
 	
 	static face_direction = function(_dir)
 	{
-		image_xscale = ((_dir == AGE_DIR_LEFT) && (sprite_left == noone)) ? -1 : 1;
+		direction = _dir;
 		
-		switch (_dir)
-		{
-			case AGE_DIR_RIGHT:
-				sprite_index = sprite_right;
-				direction = 2;
-				break;
-			case AGE_DIR_LEFT:
-				if (sprite_left == noone) sprite_index = sprite_right;
-				else sprite_index = sprite_left;
-				direction = 3;
-				break;
-			case AGE_DIR_UP:
-			sprite_index = sprite_up;
-			direction = 1;
-			break;
-			case AGE_DIR_DOWN:
-			sprite_index = sprite_down;
-			direction = 0;
-			break;
-		}
+		__update_sprites();
+	}
+	
+	static face_location = function(_x, _y)
+	{
+		//calculate direction
+		var dir = point_direction(x,y,_x,_y);
+		
+		if ((dir > 30) && (dir < 150))				direction = 1;
+		else if ((dir > 210) && (dir < 330))	direction = 3;
+		else if ((dir >= 150) && (dir <=210)) direction = 2;
+		else																	direction = 0;
+		
+		face_direction(direction);
 	}
 	
 	static change_room = function(_new_room, _x=-1, _y=-1, _dir=-1)
@@ -254,49 +323,51 @@ function AGE_Character() constructor
 			//finally go to the new room
 			room_goto(current_room);			
 		}
-		else //if another character changes rooms then free its position on the mp_grid
+		else //if another character changes rooms then occupy/free its position on the mp_grid
 		{
 			if (solid) o_age_main.walkarea_manager.update_mp_grid();
+			
+			if (current_room == room) //character enters the currently active room
+			{
+				__update_scale_level();
+			}
 		}
 	}
 	
-	static say = function(_text)
+	static say = function(_text, _blocking=true)
 	{
 		if (current_room != room)
 		{ show_debug_message("AGE: Warning: Character `"+script_name+"` cannot say anything because it's not in the current room.");
 			return; }
+		
+		var talking_head_height = 0;
 		
 		__parse_text(_text)
 		
 		talking = true;
 		__rep_exec_always_check();
 		
-		talk_duration_remaining = 20;
+		talk_duration_remaining = floor(min(10,string_length(_text)) / o_age_main.text_reading_speed * game_get_speed(gamespeed_fps));
 		talk_current_line = _text;
 		
-		if (!o_age_main.skipping_cutscene)
-			talk_textblock = o_gui.create_textblock(self,_text,x,y-sprite_get_height(sprite_index),talk_duration_remaining);
+		change_costume(age.costume_talk);
 		
-		blocked = true;
-		yield_manager = new TXR_Yield_Manager(txr_thread_current, true);
+		if (separate_talking_head)
+			talking_head_height = sprite_get_height(talking_head_sprite_index);
+		
+		if (!o_age_main.skipping_cutscene)
+			talk_textblock = o_gui.create_textblock(self,_text,x,y-sprite_get_height(sprite_index)-talking_head_height);
+		
+		if (_blocking)
+		{
+			blocked = true;
+			yield_manager = new TXR_Yield_Manager(txr_thread_current, true);
+		}
 	}
 	
 	static say_background = function(_text)
 	{
-		if (current_room != room)
-		{ show_debug_message("AGE: Warning: Character `"+script_name+"` cannot say anything because it's not in the current room.");
-			return; }
-		
-		__parse_text(_text)
-		
-		talking = true;
-		__rep_exec_always_check();
-		
-		talk_duration_remaining = 20;
-		talk_current_line = _text;
-		
-		if (!o_age_main.skipping_cutscene)
-			talk_textblock = o_gui.create_textblock(self,_text,x,y-sprite_get_height(sprite_index),talk_duration_remaining);
+		say(_text,false);
 	}
 	
 	static walk = function(_xend,_yend,_blocking)
@@ -332,7 +403,7 @@ function AGE_Character() constructor
 		walking = true;
 		__rep_exec_always_check();
 		
-		image_index = 1;
+		image_index = 1; //because frame 0 in the walking sprite is the standing frame
 		image_speed = walk_anim_speed;
 		
 		movement_speed_on_path = walk_speed / path_get_length(movement_path);
@@ -351,6 +422,11 @@ function AGE_Character() constructor
 			image_index = 0;
 			image_speed = 0;
 		}
+		
+		if (!animating)
+		{
+			__update_sprites();
+		}
 	
 		if (path_exists(movement_path))
 		{
@@ -358,10 +434,10 @@ function AGE_Character() constructor
 			movement_path = noone;
 		}
 		
-		if (solid) o_age_main.walkarea_manager.update_mp_grid(); //occupy the new position of the character in the mp_grid
-		
 		walking = false;
 		moving = false;
+		
+		if (solid) o_age_main.walkarea_manager.update_mp_grid(); //occupy the new position of the character in the mp_grid		
 	}
 	
 	static add_inventory = function(_item, _quantity=1, _at_index=-1)
@@ -572,6 +648,60 @@ function AGE_Character() constructor
 		}
 	}
 	
+	static __update_sprites = function()
+	{
+		image_xscale = ((direction == 2) && (costume_sprites_left[current_costume] == noone)) ? -1 : 1;
+	
+		switch (direction)
+		{
+			case 0:
+				sprite_index = costume_sprites_right[current_costume];
+				break;
+			case 1:
+				sprite_index = costume_sprites_up[current_costume];
+				break;
+			case 2:
+				if (costume_sprites_left[current_costume] == noone) sprite_index = costume_sprites_right[current_costume];
+				else sprite_index = costume_sprites_left[current_costume];
+				break;
+			case 3:
+				sprite_index = costume_sprites_down[current_costume];
+				break;
+		}
+		
+		//update talking head
+		if ((current_costume == age.costume_talk) && (separate_talking_head))
+		{
+			talking_head_image_index = 0;
+			
+			switch (direction)
+			{
+				case 0:
+					talking_head_sprite_index = talking_head_sprite_right;
+					break;
+				case 1:
+					talking_head_sprite_index = talking_head_sprite_up;
+					break;
+				case 2:
+					if (costume_sprites_left[current_costume] == noone) talking_head_sprite_index = talking_head_sprite_right;
+					else talking_head_sprite_index = talking_head_sprite_left;
+					break;
+				case 3:
+					talking_head_sprite_index = talking_head_sprite_down;
+					break;
+			}
+		}
+	}
+	
+	static __update_scale_level = function()
+	{
+		if (current_room != room) return;
+		if (manual_scaling) return;
+
+		var w = o_age_main.walkarea_manager.point_get_walkarea_index(x,y);
+		if (w > -1) scale_factor = o_age_main.walkarea_manager.get_scaling_at_walkarea_y(w,y);
+	}
+	
 	static __rep_exec_always_check = function()
 	{
 		//this method is only used in functions which have an ongoing effect (e.g. walking, moving, talking)
@@ -631,6 +761,9 @@ function AGE_Character() constructor
 	static __draw = function()
 	{
 		draw_sprite_ext(sprite_index,image_index,x,y,image_xscale*scale_factor,scale_factor,0,c_white,1);
+
+		if ((current_costume == age.costume_talk) && (separate_talking_head))
+			draw_sprite_ext(talking_head_sprite_index,talking_head_image_index,x,y,image_xscale*scale_factor,scale_factor,0,c_white,1);
 	}
 	
 	static __cleanup = function()
@@ -680,7 +813,10 @@ function AGE_Character_Manager() constructor
 					char.name = _settings_struct.name;
 					break;
 				case "walking_costume":
-					char.set_walking_costume(_settings_struct.walking_costume);
+					char.define_costume(age.costume_walk,_settings_struct.walking_costume);
+					break;
+				case "talking_costume":
+					char.define_costume(age.costume_talk,_settings_struct.talking_costume);
 					break;
 				case "speech_color":
 					char.speech_color = _settings_struct.speech_color;
@@ -691,6 +827,8 @@ function AGE_Character_Manager() constructor
 					break;
 			}
 		}
+		
+		char.change_costume(age.costume_walk);
 	}
 	
 	static __step = function()
@@ -707,12 +845,12 @@ function AGE_Character_Manager() constructor
 			//same also with the other checks
 			if (char.walking)
 				with (char) update_character_move();
+			
+			if (char.talking)
+				with (char) update_character_talk();
 	
 			if (char.animating)
-				with (char) update_character_animation();
-	
-			if (char.talking)
-				with (char) update_character_say();
+				with (char) update_character_animation();			
 		}
 	}
 	

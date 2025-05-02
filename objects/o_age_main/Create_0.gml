@@ -9,7 +9,11 @@ enum age
 	option_on,
 	option_off,
 	option_off_for_now,
-	option_off_forever
+	option_off_forever,
+	//costumes
+	costume_walk = 0, //walk, talk and idle are hard-coded and must not be changed
+	costume_talk = 1, //additional costumes can be defined by continuing the count from 3
+	costume_idle = 2
 }
 
 //constants used for TXR threads
@@ -72,6 +76,9 @@ function initialize_variables()
 	//savegame variables
 	saving_the_game_was_requested = -1; //is set to the save slot that should be saved at and waits until the game can be saved (see Step Event)
 	loading_the_game_was_requested = -1; //is set to the save slot that should be loaded and waits until the game can be loaded (see Step Event)
+
+	//game properties
+	text_reading_speed = 5; //in characters per second (used to calculate how long text should stay on screen)
 }
 
 function initialize_game_managers()
