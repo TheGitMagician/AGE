@@ -11,9 +11,10 @@
 
 txr_run(@'
 	//cSophia.animate(s_indi_animation,0.2,eOnce,eBlock);
-	cIndi.say("A long test sentence.");
-	cIndi.say("Okay!");
-	cIndi.say("Let`s continue.");
+	//cIndi.say("A long test sentence.");
+	//cIndi.say("Okay!");
+	//cIndi.say("Let`s continue.");
+	dTest.start();
 	');
 
 //show_message(os_type);

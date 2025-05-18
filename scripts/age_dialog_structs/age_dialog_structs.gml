@@ -9,7 +9,7 @@ function AGE_Dialog(_dialog_manager) constructor
 	//     so the actual options start with number 1
 	// * the individual dialogs have no stop() method because Dialog Manager handles the end of the conversation in its stop() method
 	
-	static manager = _dialog_manager; //the instance of the Dialog_Manager struct that controls this dialog
+	manager = _dialog_manager; //the instance of the Dialog_Manager struct that controls this dialog
 	
 	script_name = ""; //the name used in TXR scripts to access this dialog
 	
@@ -168,10 +168,8 @@ function AGE_Dialog_Manager() constructor
 	static load_file = function(_filename)
 	{
 		//returns true if file was parsed successfully or false if there were errors during parsing
-		//@TODO: should the function store the parsed dialogs locally until the parsing is finished and only then
-		//transfer them to o_age_main? Right now, if a parse error happens, all the dialogs that have been parsed
-		//already are stored in o_age_main and the other ones aren't.
-		var buffer,lines,line,i,current_dialog=undefined,current_option_id=-1,current_script,opt,n,tt=[];
+		
+		var temporary_storage=[],buffer,lines,line,i,current_dialog=undefined,current_option_id=-1,current_script,opt,n,tt=[];
 		
 		//load file
 		buffer = buffer_load(working_directory + _filename);	
@@ -213,14 +211,10 @@ function AGE_Dialog_Manager() constructor
 					current_option_id = -1;
 				}
 				
-				// -------- this is where a finished dialog is transferred into the game ----------
-				//create an instance variable for the finished struct of the *previous* dialog in o_age_main so that it can be accessed by TXR scripts
-				//and add it to o_age_main's dialogs array so that it can be accessed by other resources
+				// --- store the finished dialog into temporary memory ---
+				//if the file is successfully parsed all the at the end all dialogs are moved from this temporary array to o_age_main's dialogs array
 				if (current_dialog != undefined)
-				{
-					variable_instance_set(o,current_dialog.script_name,current_dialog);
-					array_push(o.dialogs,current_dialog);
-				}
+					array_push(temporary_storage,current_dialog);
 				
 				//then start a new dialog struct
 				line = string_replace(line,"===","");
@@ -320,17 +314,29 @@ function AGE_Dialog_Manager() constructor
 			//so convert the line into TXR script by adding the necessary TXR code around the building blocks
 			else
 			{
-				try
-				{
-					tt = string_split(line,":",true,1);
-					current_script += "\n" + string_trim(tt[0]) + @'.say("' + string_trim(tt[1]) + @'");';
-				}
-				catch(_error)
+				tt = string_split(line,":",true,1);
+				
+				if (array_length(tt) != 2) //the split must have created exactly two parts, otherwise something went wrong
 				{
 					show_message("AGE: Error parsing dialog file `"+_filename+"`. Stopped at dialog `"+current_dialog.script_name+"` because the following line couldn't be parsed:\n"+line);
-					return false
+					return false;
 				}
+				
+				current_script += "\n" + string_trim(tt[0]) + @'.say("' + string_trim(tt[1]) + @'");';
 			}
+		}
+		
+		//if we have reached this point then the whole file was parsed without any errors
+		//so now we transfer the dialog structs from the temporary storage to the game
+		//@TODO: should we use variable_clone() here to create a deep copy of the struct for the main dialogs array? That could prevent memory fragmentation.
+		n = array_length(temporary_storage);
+		for (i=0; i<n; i++)
+		{
+			//create an instance variable for the dialog in o_age_main so that it can be accessed by TXR scripts
+			//and add it to o_age_main's dialogs array so that it can be accessed by other resources
+			current_dialog = temporary_storage[i];			
+			variable_instance_set(o,current_dialog.script_name,current_dialog);
+			array_push(o.dialogs,current_dialog);
 		}
 		
 		return true;

@@ -44,9 +44,7 @@ function cave_skeleton_look_at()
 {
 	txr_run(@'
 		//cIndi.walk(150,150,eBlock);
-		cIndi.face_location(190,115);
-		wait(10);
-		cIndi.say("These guys have seen better days.");
+		
 		//cIndi.face_direction(AGE_DIR_DOWN);
 		//cIndi.animate("s_indi_animation",0.1,eOnce,eBlock);
 		//dTest.start();
@@ -54,7 +52,12 @@ function cave_skeleton_look_at()
 		//iKey.script_name = "Hello";
 		//cIndi.testing = "Hallo";
 		
-		//dTest.start();
+		dTest.start();
 		//wait(40);
+		
+		
+		//cIndi.face_location(190,115);
+		//wait(10);
+		//cIndi.say("These guys have seen better days.");
 		');
 }
