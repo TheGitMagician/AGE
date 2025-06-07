@@ -1,5 +1,5 @@
 {
-  "$GMProject":"",
+  "$GMProject":"v1",
   "%Name":"age_main",
   "AudioGroups":[
     {"$GMAudioGroup":"","%Name":"audiogroup_default","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
@@ -52,6 +52,7 @@
     {"$GMFolder":"","%Name":"Objects","folderPath":"folders/Sprites/Objects.yy","name":"Objects","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Hat","folderPath":"folders/Sprites/Objects/Hat.yy","name":"Hat","resourceType":"GMFolder","resourceVersion":"2.0",},
   ],
+  "ForcedPrefabProjectReferences":[],
   "IncludedFiles":[
     {"$GMIncludedFile":"","%Name":"dialogs.txt","CopyToMask":-1,"filePath":"datafiles","name":"dialogs.txt","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"txr-doc.dmd","CopyToMask":-1,"filePath":"datafiles","name":"txr-doc.dmd","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
